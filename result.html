@@ -984,7 +984,7 @@
             return array[index];
         }
 
-        // URL에서 능력치 결과와 시드 가져오기
+        // 수정 코드:
         function getStatsFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
             const stats = {};
@@ -998,14 +998,38 @@
                 window.resultSeed = Date.now();
             }
 
-            // 기존 방식 (개별 파라미터)으로 스탯 가져오기
-            Object.keys(statTypes).forEach(stat => {
-                const value = parseInt(urlParams.get(stat));
-                stats[stat] = isNaN(value) ? 0 : value;
-            });
+            // 스탯 순서 정의 (index.html의 순서와 동일하게 유지)
+            const statOrder = [
+                '꼰대력', '내로남불', '갑질지수', '책임회피',
+                '압박관리', '워라밸파괴', '이중인격', '무능력', '합리성'
+            ];
+
+            // stats 파라미터 값 가져오기
+            const statsParam = urlParams.get('stats');
+
+            if (statsParam) {
+                // 쉼표로 구분된 값을 배열로 변환
+                const statsValues = statsParam.split(',').map(val => parseInt(val));
+
+                // 각 순서에 맞게 스탯 객체에 할당
+                statOrder.forEach((stat, index) => {
+                    if (index < statsValues.length) {
+                        stats[stat] = isNaN(statsValues[index]) ? 0 : statsValues[index];
+                    } else {
+                        stats[stat] = 0; // 값이 없는 경우 기본값 0 설정
+                    }
+                });
+            } else {
+                // 기존 방식 (개별 파라미터)으로 스탯 가져오기 (이전 버전과의 호환성 유지)
+                statOrder.forEach(stat => {
+                    const value = parseInt(urlParams.get(stat));
+                    stats[stat] = isNaN(value) ? 0 : value;
+                });
+            }
 
             return stats;
         }
+
         // 전역 변수로 차트 인스턴스 저장
         let statChartInstance = null;
         let pageInitialized = false; // 중복 초기화 방지 플래그
@@ -1085,19 +1109,19 @@
             }
         };
 
-        // URL에서 능력치 결과 가져오기
-        function getStatsFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const stats = {};
+        // // URL에서 능력치 결과 가져오기
+        // function getStatsFromURL() {
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     const stats = {};
 
-            // 한글 파라미터 이름을 직접 사용
-            Object.keys(statTypes).forEach(stat => {
-                const value = parseInt(urlParams.get(stat));
-                stats[stat] = isNaN(value) ? 0 : value;
-            });
+        //     // 한글 파라미터 이름을 직접 사용
+        //     Object.keys(statTypes).forEach(stat => {
+        //         const value = parseInt(urlParams.get(stat));
+        //         stats[stat] = isNaN(value) ? 0 : value;
+        //     });
 
-            return stats;
-        }
+        //     return stats;
+        // }
 
         // 개선된 레이더 차트 생성 함수
         function createRadarChart(stats) {
