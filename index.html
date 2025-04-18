@@ -1000,7 +1000,6 @@
             document.getElementById('progress-bar').style.width = progressPercentage + '%';
         }
 
-        // 결과 제출 함수 수정
         function submitResults() {
             // 마지막 페이지 유효성 검사
             if (!validatePage(totalPages)) return;
@@ -1010,7 +1009,6 @@
             let firstUnansweredQuestion = null;
 
             for (let i = 1; i <= totalPages; i++) {
-                // first와 second가 모두 있는지 확인 (closest와 farthest 대신)
                 if (!selections[i] || !selections[i].first || !selections[i].second) {
                     allQuestionsAnswered = false;
 
@@ -1047,14 +1045,15 @@
 
             console.log("최종 스탯 결과:", normalizedStats);
 
-            // 결과를 URL 파라미터로 전달하여 결과 페이지로 이동
-            let resultParams = '';
+            // 고유한 시드 생성 (현재 시간 + 스탯 합계)
+            const seed = Date.now() + Object.values(normalizedStats).reduce((sum, val) => sum + val, 0);
+
+            // 결과를 URL 파라미터로 전달하여 결과 페이지로 이동 (시드 포함)
+            let resultParams = `seed=${seed}`;
             Object.keys(normalizedStats).forEach(stat => {
                 resultParams += `&${encodeURIComponent(stat)}=${normalizedStats[stat]}`;
             });
 
-            // 첫 번째 & 제거
-            resultParams = resultParams.substring(1);
             window.location.href = `result.html?${resultParams}`;
         }
 

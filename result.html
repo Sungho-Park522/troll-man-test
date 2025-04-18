@@ -972,6 +972,40 @@
     </div>
 
     <script>
+        // 시드 기반 랜덤 함수
+        function seededRandom(seed) {
+            const x = Math.sin(seed) * 10000;
+            return x - Math.floor(x);
+        }
+
+        // 시드 기반 배열 항목 선택
+        function selectBasedOnSeed(array, seed) {
+            const index = Math.floor(seededRandom(seed) * array.length);
+            return array[index];
+        }
+
+        // URL에서 능력치 결과와 시드 가져오기
+        function getStatsFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const stats = {};
+
+            // 시드 값 가져오기
+            const seedParam = urlParams.get('seed');
+            if (seedParam) {
+                window.resultSeed = parseInt(seedParam);
+            } else {
+                // 시드가 없으면 새로 생성
+                window.resultSeed = Date.now();
+            }
+
+            // 기존 방식 (개별 파라미터)으로 스탯 가져오기
+            Object.keys(statTypes).forEach(stat => {
+                const value = parseInt(urlParams.get(stat));
+                stats[stat] = isNaN(value) ? 0 : value;
+            });
+
+            return stats;
+        }
         // 전역 변수로 차트 인스턴스 저장
         let statChartInstance = null;
         let pageInitialized = false; // 중복 초기화 방지 플래그
@@ -1242,16 +1276,33 @@
 
             // 상위 4개 능력치에 대한 말풍선 내용 설정
             for (let i = 0; i < Math.min(topStats.length, bubbles.length); i++) {
+                if (!topStats[i] || !topStats[i][0]) continue; // 배열 범위 체크
+
                 const stat = topStats[i][0];
                 const contents = bubbleContents[stat];
-                if (contents && contents.length > 0) {
-                    const randomContent = contents[Math.floor(Math.random() * contents.length)];
-                    bubbles[i].textContent = randomContent;
-                    bubbles[i].style.backgroundColor = statTypes[stat].color + '40';
-                    bubbles[i].style.borderColor = statTypes[stat].color;
 
-                    // 말풍선 화살표도 같은 색상으로 설정하기 위한 스타일 추가
-                    bubbles[i].style.setProperty('--bubble-color', statTypes[stat].color + '40');
+                if (!contents || contents.length === 0) {
+                    bubbles[i].textContent = "..."; // 기본 텍스트 설정
+                    continue;
+                }
+
+                // 시드 기반 선택 (오류 방지를 위해 예외 처리 추가)
+                try {
+                    const specificSeed = (window.resultSeed || 12345) + (i * 500) + stat.charCodeAt(0);
+                    const index = Math.floor(Math.abs(Math.sin(specificSeed) * 10000) % contents.length);
+                    const randomContent = contents[index];
+
+                    bubbles[i].textContent = randomContent;
+
+                    // 스타일 적용 (statTypes가 정의되어 있는지 확인)
+                    if (statTypes && statTypes[stat] && statTypes[stat].color) {
+                        bubbles[i].style.backgroundColor = statTypes[stat].color + '40';
+                        bubbles[i].style.borderColor = statTypes[stat].color;
+                        bubbles[i].style.setProperty('--bubble-color', statTypes[stat].color + '40');
+                    }
+                } catch (error) {
+                    console.error(`말풍선 ${i} 설정 오류:`, error);
+                    bubbles[i].textContent = "..."; // 오류 시 기본 텍스트
                 }
             }
         }
@@ -1716,32 +1767,36 @@
             ];
 
             // 상위 3개 능력치에 대한 위로/공감 메시지 추가
-            topStats.forEach(([stat]) => {
+            topStats.forEach(([stat], index) => {
                 const messages = empathyMessages[stat];
                 if (messages && messages.length > 0) {
-                    // 각 능력치마다 1개 메시지 선택
-                    const messageIndex = Math.floor(Math.random() * messages.length);
-                    const message = messages[messageIndex];
+                    // 시드 기반 선택 (전역 시드 + 인덱스 + 능력치명 기반)
+                    const specificSeed = window.resultSeed + (index * 1000) + stat.charCodeAt(0);
+                    const message = selectBasedOnSeed(messages, specificSeed);
 
                     const li = document.createElement('li');
                     li.textContent = message;
                     tipsList.appendChild(li);
-
-                    // 사용한 메시지 제거 (중복 방지)
-                    messages.splice(messageIndex, 1);
                 }
             });
 
-            // 메시지가 3개 미만이면 일반적인 공감 메시지 추가
+            // 메시지가 3개 미만이면 일반적인 공감 메시지 추가 (시드 기반)
+            let generalIndex = 0;
             while (tipsList.children.length < 3 && generalEmpathy.length > 0) {
-                const messageIndex = Math.floor(Math.random() * generalEmpathy.length);
-                const message = generalEmpathy[messageIndex];
+                const specificSeed = window.resultSeed + 9000 + generalIndex;
+                const message = selectBasedOnSeed(generalEmpathy, specificSeed);
 
                 const li = document.createElement('li');
                 li.textContent = message;
                 tipsList.appendChild(li);
 
-                generalEmpathy.splice(messageIndex, 1);
+                generalIndex++;
+
+                // 중복 방지를 위해 사용된 메시지 제거
+                const messageIndex = generalEmpathy.indexOf(message);
+                if (messageIndex !== -1) {
+                    generalEmpathy.splice(messageIndex, 1);
+                }
             }
         }
         // 생존 팁 생성
@@ -1985,11 +2040,16 @@
             });
         }
 
-        // 페이지 초기화 함수 - 한 번만 실행되도록 보장
+        // 페이지 초기화 함수 내부에 디버깅 코드 추가
         function initializePage() {
             // 이미 초기화된 경우 중복 실행 방지
             if (pageInitialized) return;
             pageInitialized = true;
+
+            // 기본 시드 값 설정 (URL에서 가져오거나 없으면 현재 시간 사용)
+            const urlParams = new URLSearchParams(window.location.search);
+            window.resultSeed = parseInt(urlParams.get('seed')) || Date.now();
+            console.log("사용 중인 시드:", window.resultSeed); // 디버깅용
 
             // URL에서 능력치 결과 가져오기
             const stats = getStatsFromURL();
@@ -2007,6 +2067,7 @@
 
                 // 상사 유형 분석
                 const bossAnalysis = analyzeBossType(stats);
+                console.log("보스 분석 결과:", bossAnalysis); // 디버깅용
 
                 // 상사 유형 표시
                 document.getElementById('boss-title').textContent = bossAnalysis.title;
@@ -2014,20 +2075,36 @@
                 // 상사 설명 표시
                 displayBossDescription(bossAnalysis.title);
 
-                // 상사 이미지 설정 (새로 추가)
+                // 상사 이미지 설정
                 setBossImage(bossAnalysis.title);
 
-                // 말풍선 내용 설정
-                setRandomBubbles(bossAnalysis.topStats);
+                // 말풍선 내용 설정 (오류 처리 추가)
+                if (bossAnalysis.topStats && bossAnalysis.topStats.length > 0) {
+                    try {
+                        setRandomBubbles(bossAnalysis.topStats);
+                    } catch (error) {
+                        console.error("말풍선 설정 오류:", error);
+                    }
+                }
 
                 // 난이도 설정
                 setDifficultyLevel(bossAnalysis.difficultyLevel);
 
-                // 생존 팁 생성
-                generateSurvivalTips(bossAnalysis.topStats);
-
-                // 긍정적 특성 생성
-                // generatePositiveTraits(stats);
+                // 생존 팁 생성 (오류 처리 추가)
+                if (bossAnalysis.topStats && bossAnalysis.topStats.length > 0) {
+                    try {
+                        generateSurvivalTips(bossAnalysis.topStats);
+                    } catch (error) {
+                        console.error("빡침 포인트 생성 오류:", error);
+                        // 오류 발생 시 기본 내용 표시
+                        const tipsList = document.getElementById('tips-list');
+                        if (tipsList) {
+                            tipsList.innerHTML = '<li>상사와의 갈등 상황에서 심호흡하고 감정을 진정시키세요.</li>' +
+                                '<li>동료들과 함께 어려움을 나누며 지지를 구하세요.</li>' +
+                                '<li>업무 외 취미나 운동으로 스트레스를 해소하는 시간을 가지세요.</li>';
+                        }
+                    }
+                }
 
                 // 공유 버튼 설정
                 setupShareButtons();
