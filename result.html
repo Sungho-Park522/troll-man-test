@@ -2266,8 +2266,23 @@
             }
         });
 
-        // 로딩 화면 및 광고 관련 스크립트
         document.addEventListener('DOMContentLoaded', function () {
+            // URL에서 시드 확인 - 가장 먼저 실행
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasSeed = urlParams.has('seed');
+
+            // 시드 유무에 따라 로딩 시간 결정 (확실하게 적용)
+            let randomLoadingTime;
+            if (hasSeed) {
+                // 시드가 있으면 1~2초 로딩
+                randomLoadingTime = Math.floor(Math.random() * 1000) + 1000; // 1~2초
+                console.log("공유된 결과: 짧은 로딩 시간 적용", randomLoadingTime, "ms");
+            } else {
+                // 시드가 없으면 4~7초 로딩
+                randomLoadingTime = Math.floor(Math.random() * 3000) + 4000; // 4~7초
+                console.log("새 테스트 결과: 일반 로딩 시간 적용", randomLoadingTime, "ms");
+            }
+
             // 로딩 메시지 배열
             const loadingMessages = [
                 "상사의 꼰대력을 측정중...",
@@ -2294,12 +2309,15 @@
             const loadingMessage = document.getElementById('loading-message');
             const showResultsBtn = document.getElementById('show-results-btn');
 
-            // 랜덤 로딩 시간 (4~7초)
-            const randomLoadingTime = Math.floor(Math.random() * (7000 - 4000 + 1)) + 4000;
             let currentProgress = 0;
 
-            // 메시지 변경 간격
-            const messageChangeInterval = randomLoadingTime / (loadingMessages.length + 1);
+            // 시드가 있으면 메시지 개수 줄이기
+            const effectiveMessages = hasSeed ?
+                loadingMessages.slice(0, 3) : // 시드 있으면 첫 3개 메시지만
+                loadingMessages;              // 시드 없으면 전체 메시지
+
+            // 메시지 변경 간격 (시드 유무에 따라 조정)
+            const messageChangeInterval = randomLoadingTime / (effectiveMessages.length + 1);
             let currentMessageIndex = 0;
 
             // 진행 상태 업데이트 간격
@@ -2311,9 +2329,18 @@
             const loadingInterval = setInterval(function () {
                 currentProgress += incrementPerStep;
 
+                // 진행률이 100%에 도달하면 로딩 완료
                 if (currentProgress >= 100) {
                     currentProgress = 100;
                     clearInterval(loadingInterval);
+
+                    // 시드가 있으면 로딩 버튼 자동 클릭 (선택 사항)
+                    if (hasSeed) {
+                        // 잠시 후 자동으로 결과 표시 (시드가 있는 경우)
+                        setTimeout(function () {
+                            showResultsBtn.click();
+                        }, 500);
+                    }
 
                     // 로딩 완료 후 결과 버튼 표시
                     showResultsBtn.style.display = 'inline-block';
@@ -2327,10 +2354,11 @@
                 progressBar.style.width = currentProgress + '%';
                 percentage.textContent = Math.round(currentProgress) + '%';
 
-                // 메시지 업데이트
-                if (currentProgress > (currentMessageIndex + 1) * (100 / loadingMessages.length)) {
-                    currentMessageIndex = Math.min(currentMessageIndex + 1, loadingMessages.length - 1);
-                    loadingMessage.textContent = loadingMessages[currentMessageIndex];
+                // 메시지 업데이트 (시드 유무에 따라 다른 메시지 집합 사용)
+                if (effectiveMessages.length > 0 &&
+                    currentProgress > (currentMessageIndex + 1) * (100 / effectiveMessages.length)) {
+                    currentMessageIndex = Math.min(currentMessageIndex + 1, effectiveMessages.length - 1);
+                    loadingMessage.textContent = effectiveMessages[currentMessageIndex];
                 }
             }, updateInterval);
 
