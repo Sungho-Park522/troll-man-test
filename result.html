@@ -2377,13 +2377,13 @@
                     currentProgress = 100;
                     clearInterval(loadingInterval);
 
-                    // 시드가 있으면 로딩 버튼 자동 클릭 (선택 사항)
-                    if (hasSeed) {
-                        // 잠시 후 자동으로 결과 표시 (시드가 있는 경우)
-                        setTimeout(function () {
-                            showResultsBtn.click();
-                        }, 500);
-                    }
+                    // // 시드가 있으면 로딩 버튼 자동 클릭 (선택 사항)
+                    // if (hasSeed) {
+                    //     // 잠시 후 자동으로 결과 표시 (시드가 있는 경우)
+                    //     setTimeout(function () {
+                    //         showResultsBtn.click();
+                    //     }, 500);
+                    // }
 
                     // 로딩 완료 후 결과 버튼 표시
                     showResultsBtn.style.display = 'inline-block';
