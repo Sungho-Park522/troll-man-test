@@ -2144,59 +2144,96 @@
             }
         }
 
-        // 페이지 로드 시 한 번만 실행
         document.addEventListener('DOMContentLoaded', function () {
-            // Chart.js 테스트 코드 - 간단한 기능 확인만 수행하고 바로 제거
-            console.log("DOM 로드 완료, Chart.js 테스트 시작");
+            // 로딩 메시지 배열
+            const loadingMessages = [
+                "상사의 꼰대력을 측정중...",
+                "내로남불 지수 분석중...",
+                "갑질 패턴 탐색중...",
+                "워라밸 파괴력 계산중...",
+                "책임회피 사례 수집중...",
+                "이중인격 지표 분석중...",
+                "상사의 영혼을 검색중...",
+                "압박관리 스타일 분석중...",
+                "퇴사 가능성 예측중..."
+            ];
 
-            // Chart.js가 로드되었는지 확인
-            if (typeof Chart === 'undefined') {
-                console.error("Chart.js가 로드되지 않았습니다!");
-                return;
+            // 결과 컨테이너 숨기기
+            const resultContainer = document.querySelector('.result-container');
+            if (resultContainer) {
+                resultContainer.style.display = 'none';
             }
 
-            console.log("Chart.js 버전:", Chart.version);
+            // 로딩 화면 표시
+            const loadingContainer = document.getElementById('loading-container');
+            const progressBar = document.getElementById('loading-progress-bar');
+            const percentage = document.getElementById('loading-percentage');
+            const loadingMessage = document.getElementById('loading-message');
+            const showResultsBtn = document.getElementById('show-results-btn');
 
-            try {
-                // 아주 작은 테스트용 차트 생성 (화면에 표시되지 않음)
-                const testCanvas = document.createElement('canvas');
-                testCanvas.id = 'testChart';
-                testCanvas.width = 10; // 매우 작게 설정
-                testCanvas.height = 10;
-                testCanvas.style.position = 'absolute';
-                testCanvas.style.visibility = 'hidden';
-                testCanvas.style.display = 'none';
-                document.body.appendChild(testCanvas);
+            // URL에서 시드 확인
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasSeed = urlParams.has('seed');
 
-                const testChart = new Chart(testCanvas.getContext('2d'), {
-                    type: 'pie',
-                    data: {
-                        labels: ['테스트'],
-                        datasets: [{
-                            data: [1],
-                            backgroundColor: ['rgba(255, 99, 132, 0.2)']
-                        }]
-                    },
-                    options: {
-                        responsive: false,
-                        animation: false
+            // 시드 유무에 따라 로딩 시간 결정
+            // 이미 분석된 결과를 보는 경우(시드 있음) 짧은 로딩 시간 적용
+            const randomLoadingTime = hasSeed
+                ? Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000  // 1~2초
+                : Math.floor(Math.random() * (7000 - 4000 + 1)) + 4000; // 4~7초
+
+            let currentProgress = 0;
+
+            // 메시지 변경 간격 (시드 유무에 따라 간격 조정)
+            const messageChangeInterval = randomLoadingTime / (loadingMessages.length + 1);
+            let currentMessageIndex = 0;
+
+            // 진행 상태 업데이트 간격
+            const updateInterval = 30; // 30ms마다 업데이트
+            const totalSteps = randomLoadingTime / updateInterval;
+            const incrementPerStep = 100 / totalSteps;
+
+            // 진행 상태 및 메시지 업데이트 함수
+            const loadingInterval = setInterval(function () {
+                currentProgress += incrementPerStep;
+
+                if (currentProgress >= 100) {
+                    currentProgress = 100;
+                    clearInterval(loadingInterval);
+
+                    // 로딩 완료 후 결과 버튼 표시
+                    showResultsBtn.style.display = 'inline-block';
+                    showResultsBtn.classList.add('pulse');
+
+                    // 마지막 메시지 표시
+                    loadingMessage.textContent = "분석 완료! 결과를 확인해보세요.";
+                }
+
+                // 프로그레스 바 및 퍼센트 업데이트
+                progressBar.style.width = currentProgress + '%';
+                percentage.textContent = Math.round(currentProgress) + '%';
+
+                // 메시지 업데이트
+                if (currentProgress > (currentMessageIndex + 1) * (100 / loadingMessages.length)) {
+                    currentMessageIndex = Math.min(currentMessageIndex + 1, loadingMessages.length - 1);
+                    loadingMessage.textContent = loadingMessages[currentMessageIndex];
+                }
+            }, updateInterval);
+
+            // 결과 보기 버튼 클릭 이벤트
+            showResultsBtn.addEventListener('click', function () {
+                // 로딩 화면 숨기기
+                loadingContainer.style.display = 'none';
+
+                // 결과 컨테이너 표시
+                if (resultContainer) {
+                    resultContainer.style.display = 'block';
+
+                    // 차트 다시 그리기 (필요한 경우)
+                    if (typeof initializePage === 'function') {
+                        initializePage();
                     }
-                });
-
-                console.log("테스트 차트 생성 성공!");
-
-                // 테스트 차트 완전히 제거
-                testChart.destroy();
-                document.body.removeChild(testCanvas);
-
-                // 이제 실제 분석 결과 초기화
-                setTimeout(initializePage, 100); // 약간의 지연을 주어 테스트 차트가 완전히 제거된 후 실행
-
-            } catch (error) {
-                console.error("테스트 차트 생성 실패:", error);
-                // 차트 생성에 문제가 있어도 페이지 초기화는 시도
-                initializePage();
-            }
+                }
+            });
         });
 
         // 페이지 완전 로드 시에도 초기화 시도 (DOMContentLoaded가 실패한 경우 백업)
