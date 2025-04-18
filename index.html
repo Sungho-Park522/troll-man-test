@@ -1000,6 +1000,8 @@
             document.getElementById('progress-bar').style.width = progressPercentage + '%';
         }
 
+
+        // 수정 코드:
         function submitResults() {
             // 마지막 페이지 유효성 검사
             if (!validatePage(totalPages)) return;
@@ -1048,13 +1050,17 @@
             // 고유한 시드 생성 (현재 시간 + 스탯 합계)
             const seed = Date.now() + Object.values(normalizedStats).reduce((sum, val) => sum + val, 0);
 
-            // 결과를 URL 파라미터로 전달하여 결과 페이지로 이동 (시드 포함)
-            let resultParams = `seed=${seed}`;
-            Object.keys(normalizedStats).forEach(stat => {
-                resultParams += `&${encodeURIComponent(stat)}=${normalizedStats[stat]}`;
-            });
+            // 스탯 이름의 순서를 고정 (고정된 순서로 값만 전달)
+            const statOrder = [
+                '꼰대력', '내로남불', '갑질지수', '책임회피',
+                '압박관리', '워라밸파괴', '이중인격', '무능력', '합리성'
+            ];
 
-            window.location.href = `result.html?${resultParams}`;
+            // 순서대로 값만 추출하여 쉼표로 구분된 문자열로 만듦
+            const statsValues = statOrder.map(stat => normalizedStats[stat] || 0).join(',');
+
+            // URL 파라미터로 시드와 스탯 값 배열만 전달
+            window.location.href = `result.html?seed=${seed}&stats=${statsValues}`;
         }
 
         // 선택 버튼 클릭 이벤트 처리 함수
