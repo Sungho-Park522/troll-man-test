@@ -2309,118 +2309,118 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // URL에서 시드 확인 - 가장 먼저 실행
-            const urlParams = new URLSearchParams(window.location.search);
-            const hasSeed = urlParams.has('seed');
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     // URL에서 시드 확인 - 가장 먼저 실행
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     const hasSeed = urlParams.has('seed');
 
-            // 시드 유무에 따라 로딩 시간 결정 (확실하게 적용)
-            let randomLoadingTime;
-            if (hasSeed) {
-                // 시드가 있으면 1~2초 로딩
-                randomLoadingTime = Math.floor(Math.random() * 3000) + 4000; // 1~2초
-                console.log("공유된 결과: 짧은 로딩 시간 적용", randomLoadingTime, "ms");
-            } else {
-                // 시드가 없으면 4~7초 로딩
-                randomLoadingTime = Math.floor(Math.random() * 3000) + 4000; // 4~7초
-                console.log("새 테스트 결과: 일반 로딩 시간 적용", randomLoadingTime, "ms");
-            }
+        //     // 시드 유무에 따라 로딩 시간 결정 (확실하게 적용)
+        //     let randomLoadingTime;
+        //     if (hasSeed) {
+        //         // 시드가 있으면 1~2초 로딩
+        //         randomLoadingTime = Math.floor(Math.random() * 3000) + 4000; // 1~2초
+        //         console.log("공유된 결과: 짧은 로딩 시간 적용", randomLoadingTime, "ms");
+        //     } else {
+        //         // 시드가 없으면 4~7초 로딩
+        //         randomLoadingTime = Math.floor(Math.random() * 3000) + 4000; // 4~7초
+        //         console.log("새 테스트 결과: 일반 로딩 시간 적용", randomLoadingTime, "ms");
+        //     }
 
-            // 로딩 메시지 배열
-            const loadingMessages = [
-                "상사의 꼰대력을 측정중...",
-                "내로남불 지수 분석중...",
-                "갑질 패턴 탐색중...",
-                "워라밸 파괴력 계산중...",
-                "책임회피 사례 수집중...",
-                "이중인격 지표 분석중...",
-                "상사의 영혼을 검색중...",
-                "압박관리 스타일 분석중...",
-                "퇴사 가능성 예측중..."
-            ];
+        //     // 로딩 메시지 배열
+        //     const loadingMessages = [
+        //         "상사의 꼰대력을 측정중...",
+        //         "내로남불 지수 분석중...",
+        //         "갑질 패턴 탐색중...",
+        //         "워라밸 파괴력 계산중...",
+        //         "책임회피 사례 수집중...",
+        //         "이중인격 지표 분석중...",
+        //         "상사의 영혼을 검색중...",
+        //         "압박관리 스타일 분석중...",
+        //         "퇴사 가능성 예측중..."
+        //     ];
 
-            // 결과 컨테이너 숨기기
-            const resultContainer = document.querySelector('.result-container');
-            if (resultContainer) {
-                resultContainer.style.display = 'none';
-            }
+        //     // 결과 컨테이너 숨기기
+        //     const resultContainer = document.querySelector('.result-container');
+        //     if (resultContainer) {
+        //         resultContainer.style.display = 'none';
+        //     }
 
-            // 로딩 화면 표시
-            const loadingContainer = document.getElementById('loading-container');
-            const progressBar = document.getElementById('loading-progress-bar');
-            const percentage = document.getElementById('loading-percentage');
-            const loadingMessage = document.getElementById('loading-message');
-            const showResultsBtn = document.getElementById('show-results-btn');
+        //     // 로딩 화면 표시
+        //     const loadingContainer = document.getElementById('loading-container');
+        //     const progressBar = document.getElementById('loading-progress-bar');
+        //     const percentage = document.getElementById('loading-percentage');
+        //     const loadingMessage = document.getElementById('loading-message');
+        //     const showResultsBtn = document.getElementById('show-results-btn');
 
-            let currentProgress = 0;
+        //     let currentProgress = 0;
 
-            // 시드가 있으면 메시지 개수 줄이기
-            const effectiveMessages = hasSeed ?
-                loadingMessages.slice(0, 3) : // 시드 있으면 첫 3개 메시지만
-                loadingMessages;              // 시드 없으면 전체 메시지
+        //     // 시드가 있으면 메시지 개수 줄이기
+        //     const effectiveMessages = hasSeed ?
+        //         loadingMessages.slice(0, 3) : // 시드 있으면 첫 3개 메시지만
+        //         loadingMessages;              // 시드 없으면 전체 메시지
 
-            // 메시지 변경 간격 (시드 유무에 따라 조정)
-            const messageChangeInterval = randomLoadingTime / (effectiveMessages.length + 1);
-            let currentMessageIndex = 0;
+        //     // 메시지 변경 간격 (시드 유무에 따라 조정)
+        //     const messageChangeInterval = randomLoadingTime / (effectiveMessages.length + 1);
+        //     let currentMessageIndex = 0;
 
-            // 진행 상태 업데이트 간격
-            const updateInterval = 30; // 30ms마다 업데이트
-            const totalSteps = randomLoadingTime / updateInterval;
-            const incrementPerStep = 100 / totalSteps;
+        //     // 진행 상태 업데이트 간격
+        //     const updateInterval = 30; // 30ms마다 업데이트
+        //     const totalSteps = randomLoadingTime / updateInterval;
+        //     const incrementPerStep = 100 / totalSteps;
 
-            // 진행 상태 및 메시지 업데이트 함수
-            const loadingInterval = setInterval(function () {
-                currentProgress += incrementPerStep;
+        //     // 진행 상태 및 메시지 업데이트 함수
+        //     const loadingInterval = setInterval(function () {
+        //         currentProgress += incrementPerStep;
 
-                // 진행률이 100%에 도달하면 로딩 완료
-                if (currentProgress >= 100) {
-                    currentProgress = 100;
-                    clearInterval(loadingInterval);
+        //         // 진행률이 100%에 도달하면 로딩 완료
+        //         if (currentProgress >= 100) {
+        //             currentProgress = 100;
+        //             clearInterval(loadingInterval);
 
-                    // // 시드가 있으면 로딩 버튼 자동 클릭 (선택 사항)
-                    // if (hasSeed) {
-                    //     // 잠시 후 자동으로 결과 표시 (시드가 있는 경우)
-                    //     setTimeout(function () {
-                    //         showResultsBtn.click();
-                    //     }, 500);
-                    // }
+        //             // // 시드가 있으면 로딩 버튼 자동 클릭 (선택 사항)
+        //             // if (hasSeed) {
+        //             //     // 잠시 후 자동으로 결과 표시 (시드가 있는 경우)
+        //             //     setTimeout(function () {
+        //             //         showResultsBtn.click();
+        //             //     }, 500);
+        //             // }
 
-                    // 로딩 완료 후 결과 버튼 표시
-                    showResultsBtn.style.display = 'inline-block';
-                    showResultsBtn.classList.add('pulse');
+        //             // 로딩 완료 후 결과 버튼 표시
+        //             showResultsBtn.style.display = 'inline-block';
+        //             showResultsBtn.classList.add('pulse');
 
-                    // 마지막 메시지 표시
-                    loadingMessage.textContent = "분석 완료! 결과를 확인해보세요.";
-                }
+        //             // 마지막 메시지 표시
+        //             loadingMessage.textContent = "분석 완료! 결과를 확인해보세요.";
+        //         }
 
-                // 프로그레스 바 및 퍼센트 업데이트
-                progressBar.style.width = currentProgress + '%';
-                percentage.textContent = Math.round(currentProgress) + '%';
+        //         // 프로그레스 바 및 퍼센트 업데이트
+        //         progressBar.style.width = currentProgress + '%';
+        //         percentage.textContent = Math.round(currentProgress) + '%';
 
-                // 메시지 업데이트 (시드 유무에 따라 다른 메시지 집합 사용)
-                if (effectiveMessages.length > 0 &&
-                    currentProgress > (currentMessageIndex + 1) * (100 / effectiveMessages.length)) {
-                    currentMessageIndex = Math.min(currentMessageIndex + 1, effectiveMessages.length - 1);
-                    loadingMessage.textContent = effectiveMessages[currentMessageIndex];
-                }
-            }, updateInterval);
+        //         // 메시지 업데이트 (시드 유무에 따라 다른 메시지 집합 사용)
+        //         if (effectiveMessages.length > 0 &&
+        //             currentProgress > (currentMessageIndex + 1) * (100 / effectiveMessages.length)) {
+        //             currentMessageIndex = Math.min(currentMessageIndex + 1, effectiveMessages.length - 1);
+        //             loadingMessage.textContent = effectiveMessages[currentMessageIndex];
+        //         }
+        //     }, updateInterval);
 
-            // 결과 보기 버튼 클릭 이벤트
-            showResultsBtn.addEventListener('click', function () {
-                // 로딩 화면 숨기기
-                loadingContainer.style.display = 'none';
+        //     // 결과 보기 버튼 클릭 이벤트
+        //     showResultsBtn.addEventListener('click', function () {
+        //         // 로딩 화면 숨기기
+        //         loadingContainer.style.display = 'none';
 
-                // 결과 컨테이너 표시
-                if (resultContainer) {
-                    resultContainer.style.display = 'block';
+        //         // 결과 컨테이너 표시
+        //         if (resultContainer) {
+        //             resultContainer.style.display = 'block';
 
-                    // 차트 다시 그리기 (필요한 경우)
-                    if (typeof initializePage === 'function') {
-                        initializePage();
-                    }
-                }
-            });
-        });
+        //             // 차트 다시 그리기 (필요한 경우)
+        //             if (typeof initializePage === 'function') {
+        //                 initializePage();
+        //             }
+        //         }
+        //     });
+        // });
     </script>
 </body>
 
