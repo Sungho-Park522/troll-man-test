@@ -919,39 +919,91 @@
             animation-delay: 1.2s;
         }
 
-        /* 반응형 디자인 */
         @media (max-width: 768px) {
 
             /* 모바일에서는 다시 세로 배치로 전환 */
             .results-main-content {
                 flex-direction: column;
+                gap: 15px;
+                /* 간격 줄임 */
             }
 
             .stats-container,
             .boss-image-container {
                 max-width: 100%;
-                /* 모바일에서는 전체 너비 사용 */
-            }
-
-            .speech-bubble {
-                max-width: 120px;
-                font-size: 12px;
-                padding: 8px 12px;
-            }
-
-            .boss-image {
-                width: 150px;
-                height: 200px;
+                width: 100%;
+                /* 가로 너비 100%로 설정 */
+                min-height: auto;
+                /* 높이는 컨텐츠에 맞게 자동 조정 */
             }
 
             .radar-chart-container {
-                height: 350px;
-                /* 모바일에서는 더 작게 */
+                height: 60vh;
+                /* 뷰포트 높이의 60%로 설정 */
+                width: 100%;
+                /* 가로 너비 100%로 설정 */
+                margin: 0 auto;
             }
 
             .boss-image-container {
-                height: 300px;
-                /* 모바일에서는 더 작게 */
+                height: auto;
+                /* 높이 자동 조정 */
+                padding: 20px 0;
+                /* 상하 여백 추가 */
+                position: relative;
+                /* 포지션 설정 추가 */
+            }
+
+            .boss-image {
+                width: 70%;
+                /* 부모 컨테이너의 70% 크기로 설정 */
+                height: auto;
+                /* 비율 유지 */
+                max-height: 50vh;
+                /* 최대 높이 제한 */
+                margin: 0 auto;
+                /* 중앙 정렬 */
+                display: block;
+                /* 블록 요소로 변경 */
+            }
+
+            /* 말풍선 위치 조정 */
+            .bubble-container {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                padding: 10px;
+                /* 패딩 추가 */
+            }
+
+            /* 각 말풍선 위치 조정 */
+            .speech-bubble {
+                max-width: 28%;
+                /* 너비 축소 */
+                font-size: 3vw;
+                /* 글자 크기 조정 */
+                padding: 1.5vw;
+            }
+
+            /* 말풍선 위치 개별 조정 */
+            .bubble-top-left {
+                top: 5%;
+                left: 5%;
+            }
+
+            .bubble-top-right {
+                top: 5%;
+                right: 5%;
+            }
+
+            .bubble-bottom-left {
+                bottom: 5%;
+                left: 5%;
+            }
+
+            .bubble-bottom-right {
+                bottom: 5%;
+                right: 5%;
             }
         }
     </style>
@@ -1057,17 +1109,17 @@
         <div class="psychology-section fade-in delay-4">
             <div class="section-title">그 놈은 왜 그럴까?</div>
 
-            <!-- 모드 전환 토글 추가 -->
-            <div class="mode-toggle">
-                <button class="mode-button active" id="fun-mode">기본모드</button>
-                <button class="mode-button" id="spicy-mode">심층분석</button>
-            </div>
-
             <div class="psychology-content">
                 <div class="psychology-title" id="psychology-title">그 행동의 심리적 이유</div>
                 <ul class="psychology-list" id="psychology-list">
                     <li>로딩 중...</li>
                 </ul>
+            </div>
+
+            <!-- 모드 전환 토글을 섹션 하단으로 이동 -->
+            <div class="mode-toggle">
+                <button class="mode-button active" id="fun-mode">기본모드</button>
+                <button class="mode-button" id="spicy-mode">심층분석</button>
             </div>
         </div>
         <!-- <div class="psychological-prescription fade-in delay-4">
@@ -2328,7 +2380,7 @@
             // 섹션 제목과 클래스 변경
             const sectionTitle = document.querySelector('.section-title');
             if (sectionTitle) {
-                sectionTitle.textContent = '그 놈은 왜 그럴까?';
+                sectionTitle.textContent = '생존 난이도';
             }
 
             // 기존 anger-points 클래스를 psychology-section으로 변경
@@ -2379,30 +2431,30 @@
     }
     
     /* 버튼 스타일 */
-    #fun-mode.active {
-        background-color: #f44336; /* 빨간색 계열 */
-        color: white;
-        box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
-    }
-    
-    #spicy-mode.active {
-        background-color: #2196F3; /* 파란색 계열 */
-        color: white;
-        box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
-    }
+#fun-mode.active {
+    background-color: #f44336; /* 빨간색 계열 */
+    color: white;
+    box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
+}
+
+#spicy-mode.active {
+    background-color: #2196F3; /* 파란색 계열 */
+    color: white;
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
+}
     
     /* 모드별 섹션 스타일 */
-    .psychology-section.fun-mode-active {
-        background-color: #ffebee; /* 연한 빨간색/분홍색 배경 */
-        border-top: 3px solid #f44336;
-        box-shadow: 0 3px 15px rgba(244, 67, 54, 0.15);
-    }
-    
-    .psychology-section.analysis-mode-active {
-        background-color: #e3f2fd; /* 더 선명한 하늘색 배경 */
-        border-top: 3px solid #2196F3;
-        box-shadow: 0 3px 15px rgba(33, 150, 243, 0.15);
-    }
+.psychology-section.fun-mode-active {
+    background-color: #ffebee; /* 연한 빨간색/분홍색 배경 */
+    border-top: 3px solid #f44336;
+    box-shadow: 0 3px 15px rgba(244, 67, 54, 0.15);
+}
+
+.psychology-section.analysis-mode-active {
+    background-color: #e3f2fd; /* 더 선명한 하늘색 배경 */
+    border-top: 3px solid #2196F3;
+    box-shadow: 0 3px 15px rgba(33, 150, 243, 0.15);
+}
     
     /* 기본모드 항목 스타일 */
     .psychology-list li.fun-mode em {
@@ -3416,7 +3468,7 @@
 
             // 테스트 다시하기 버튼
             document.getElementById('back-btn').addEventListener('click', () => {
-                window.location.href = 'index.html';
+                window.location.href = 'index_v4.html';
             });
         }
 
