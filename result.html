@@ -3487,31 +3487,43 @@
             });
 
             // 링크 복사 버튼
+            // 링크 복사 버튼
             document.getElementById('copy-link-btn').addEventListener('click', () => {
-                // 현재 URL에서 시드를 포함한 상태로 가져오기
-                const currentUrl = window.location.href;
+                // 현재 URL과 보스 타이틀 가져오기
+                const bossTitle = document.getElementById('boss-title').textContent;
+                let shareUrl = window.location.href;
 
                 // 시드가 없는 경우 추가
-                let shareUrl = currentUrl;
                 if (!shareUrl.includes('seed=') && window.resultSeed) {
                     const separator = shareUrl.includes('?') ? '&' : '?';
                     shareUrl = `${shareUrl}${separator}seed=${window.resultSeed}`;
                 }
 
-                navigator.clipboard.writeText(shareUrl)
+                // 템플릿 형식의 메시지 구성
+                const templateMessage =
+                    `[미운 그놈 스탯 분석 결과 - 직장편]
+        
+내 상사는 "${bossTitle}"이(가) 나왔어요!
+당신의 상사는 어떤 유형인가요?
+
+결과 보기: ${shareUrl}
+테스트 하기: https://sungho-park522.github.io/troll-man-test/index.html`;
+
+                // 클립보드에 복사
+                navigator.clipboard.writeText(templateMessage)
                     .then(() => {
-                        alert('결과 링크가 클립보드에 복사되었습니다!');
+                        alert('결과 메시지가 클립보드에 복사되었습니다!');
                     })
                     .catch(err => {
                         console.error('링크 복사 실패:', err);
-                        // 대체 방법
-                        const tempInput = document.createElement('input');
+                        // 대체 방식
+                        const tempInput = document.createElement('textarea');
                         document.body.appendChild(tempInput);
-                        tempInput.value = shareUrl;
+                        tempInput.value = templateMessage;
                         tempInput.select();
                         document.execCommand('copy');
                         document.body.removeChild(tempInput);
-                        alert('결과 링크가 클립보드에 복사되었습니다!');
+                        alert('결과 메시지가 클립보드에 복사되었습니다!');
                     });
             });
 
