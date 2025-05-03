@@ -10,7 +10,8 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
-    <!-- result.html의 <head> 태그 내에 추가할 코드 -->
+    <!-- 카카오 공유기능 추가-->
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 
     <!-- 기본 Open Graph 메타 태그 -->
     <meta property="og:title" content="미운 그놈 스탯 분석 결과 - 직장편" />
@@ -1146,6 +1147,8 @@
         <div class="share-section fade-in delay-5">
             <div class="share-title">친구에게 공유하기</div>
             <div class="share-buttons">
+                <button class="share-button" id="kakao-share-btn" style="background-color: #FEE500; color: #000000;">🗨️
+                    카카오톡</button>
                 <button class="share-button" id="copy-link-btn">🔗 링크 복사</button>
                 <button class="share-button" id="share-btn">📱 공유하기</button>
             </div>
@@ -3423,8 +3426,66 @@
             }
         }
 
-        // 공유 기능
+        // 공유 버튼 설정
         function setupShareButtons() {
+            // 카카오 공유 버튼 클릭 이벤트
+            document.getElementById('kakao-share-btn').addEventListener('click', function () {
+                // 카카오 SDK 초기화 (처음 클릭할 때만)
+                if (typeof Kakao !== 'undefined' && !Kakao.isInitialized()) {
+                    Kakao.init('31f13f66e83c5eb7091fd137350a43ae');
+                }
+
+                if (typeof Kakao === 'undefined') {
+                    alert('카카오톡 공유 기능을 사용할 수 없습니다. 링크 복사를 이용해주세요.');
+                    return;
+                }
+
+                // 보스 타이틀 가져오기
+                const bossTitle = document.getElementById('boss-title').textContent;
+
+                // 공유 URL 생성 (시드 포함)
+                let shareUrl = window.location.href;
+                if (!shareUrl.includes('seed=') && window.resultSeed) {
+                    const separator = shareUrl.includes('?') ? '&' : '?';
+                    shareUrl = `${shareUrl}${separator}seed=${window.resultSeed}`;
+                }
+
+                // 카카오톡 공유하기
+                try {
+                    Kakao.Link.sendDefault({
+                        objectType: 'feed',
+                        content: {
+                            title: '미운 그놈 스탯 분석 결과 - 직장편',
+                            description: `내 상사는 "${bossTitle}"이(가) 나왔어요! 당신의 상사는 어떤 유형인가요?`,
+                            imageUrl: 'https://sungho-park522.github.io/troll-man-test/images/boss_complex.png',
+                            link: {
+                                mobileWebUrl: shareUrl,
+                                webUrl: shareUrl
+                            }
+                        },
+                        buttons: [
+                            {
+                                title: '결과 보기',
+                                link: {
+                                    mobileWebUrl: shareUrl,
+                                    webUrl: shareUrl
+                                }
+                            },
+                            {
+                                title: '테스트 하기',
+                                link: {
+                                    mobileWebUrl: 'https://sungho-park522.github.io/troll-man-test/index.html',
+                                    webUrl: 'https://sungho-park522.github.io/troll-man-test/index.html'
+                                }
+                            }
+                        ]
+                    });
+                } catch (e) {
+                    console.error('카카오톡 공유 에러:', e);
+                    alert('카카오톡 공유 기능을 사용할 수 없습니다. 링크 복사를 이용해주세요.');
+                }
+            });
+
             // 링크 복사 버튼
             document.getElementById('copy-link-btn').addEventListener('click', () => {
                 // 현재 URL에서 시드를 포함한 상태로 가져오기
@@ -3826,6 +3887,22 @@
         //         }
         //     });
         // });
+    </script>
+    <script>
+        // 페이지 로드 완료 후 실행
+        document.addEventListener('DOMContentLoaded', function () {
+            // 카카오 SDK 동적 로드
+            const kakaoScript = document.createElement('script');
+            kakaoScript.src = 'https://developers.kakao.com/sdk/js/kakao.js';
+            kakaoScript.onload = function () {
+                console.log("카카오 SDK 로드 완료:", typeof Kakao);
+                if (typeof Kakao !== 'undefined') {
+                    Kakao.init('여기에_발급받은_JavaScript_키를_넣으세요');
+                    console.log("카카오 SDK 초기화 상태:", Kakao.isInitialized());
+                }
+            };
+            document.head.appendChild(kakaoScript);
+        });
     </script>
 </body>
 
