@@ -2997,6 +2997,14 @@
             // 기본 데이터 설정 - 기본모드(funMode)를 초기값으로 설정
             let analysisData = funMode;
 
+            // 페이지 초기 로드 시 스크롤 방지를 위한 플래그
+            let isInitialLoad = true;
+
+            // 초기 로드 후 플래그 변경 (약간의 시간 지연 후)
+            setTimeout(() => {
+                isInitialLoad = false;
+            }, 1000);
+
             // 심층분석 버튼 클릭 이벤트
             if (analysisBtn) {
                 analysisBtn.addEventListener('click', function () {
@@ -3008,6 +3016,11 @@
                     if (section) {
                         section.classList.remove('fun-mode-active');
                         section.classList.add('analysis-mode-active');
+
+                        // 초기 로드가 아닐 때만 스크롤
+                        if (!isInitialLoad) {
+                            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
                     }
 
                     const title = document.querySelector('.psychology-title');
@@ -3032,6 +3045,11 @@
                     if (section) {
                         section.classList.remove('analysis-mode-active');
                         section.classList.add('fun-mode-active');
+
+                        // 초기 로드가 아닐 때만 스크롤
+                        if (!isInitialLoad) {
+                            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
                     }
 
                     const title = document.querySelector('.psychology-title');
@@ -3468,7 +3486,7 @@
 
             // 테스트 다시하기 버튼
             document.getElementById('back-btn').addEventListener('click', () => {
-                window.location.href = 'index_v4.html';
+                window.location.href = 'index.html';
             });
         }
 
