@@ -927,7 +927,7 @@
                 }
             }
 
-            // 페이지 이동 함수
+            // 페이지 이동 함수를 수정하여 스크롤 기능 추가
             function navigateToPage(pageNum) {
                 // 현재 페이지가 유효한지 확인 (다음 버튼 클릭 시)
                 if (pageNum > currentPage && currentPage > 0) {
@@ -961,6 +961,9 @@
 
                 // 페이지 인디케이터 업데이트
                 updatePageIndicators();
+
+                // 스크롤을 페이지 맨 위로 이동
+                window.scrollTo(0, 0);
             }
 
             // 페이지 유효성 검사
