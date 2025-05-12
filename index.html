@@ -1,1414 +1,1414 @@
-<!DOCTYPE html>
-<html lang="ko">
+    <!DOCTYPE html>
+    <html lang="ko">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>미운 그놈 - 직장 상사편</title>
-    <!-- 파비콘 추가 -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-
-        .test-container {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            min-height: 400px;
-        }
-
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .intro {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-        }
-
-        .question {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            background-color: #f0f4ff;
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .options {
-            margin-bottom: 30px;
-        }
-
-        .option {
-            border: 1px solid #e9ecef;
-            background-color: #f8f9fa;
-            margin: 10px 0;
-            padding: 12px 15px;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-
-        .option:hover {
-            background-color: #e9ecef;
-        }
-
-        .option-text {
-            margin-bottom: 10px;
-        }
-
-        .selection-group {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .selection-btn {
-            flex: 1;
-            padding: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: none;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .selection-btn:hover {
-            background-color: #f1f1f1;
-        }
-
-        .selection-btn.first {
-            border-color: #4a6bdf;
-            color: #4a6bdf;
-        }
-
-        .selection-btn.first.selected {
-            background-color: #4a6bdf;
-            color: white;
-        }
-
-        .selection-btn.second {
-            border-color: #d9534f;
-            /* 빨간색 테두리 */
-            color: #d9534f;
-            /* 빨간색 글자 */
-        }
-
-        .selection-btn.second.selected {
-            background-color: #d9534f;
-            /* 빨간색 배경 */
-            color: white;
-        }
-
-        .option.selected-first .option-text {
-            font-weight: bold;
-            color: #4a6bdf;
-        }
-
-        .option.selected-second .option-text {
-            font-weight: bold;
-            color: #d9534f;
-            /* 빨간색 글자 */
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .nav-btn {
-            padding: 12px;
-            background-color: #4a6bdf;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .nav-btn:hover {
-            background-color: #3a54b4;
-        }
-
-        .nav-btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        .prev-btn {
-            flex: 0 0 auto;
-            width: 100px;
-        }
-
-        .next-btn,
-        .submit-btn {
-            flex: 0 0 auto;
-            width: 100px;
-        }
-
-        .error {
-            color: #d9534f;
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        .progress-container {
-            margin: 20px 0;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .progress {
-            height: 100%;
-            background-color: #4a6bdf;
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .question-number {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        /* 질문 페이지 표시/숨김 */
-        .question-page {
-            display: none;
-        }
-
-        .question-page.active {
-            display: block;
-        }
-
-        .intro-page {
-            display: block;
-        }
-
-        .page-indicators {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-
-        .page-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #e9ecef;
-            margin: 0 5px;
-            cursor: pointer;
-        }
-
-        .page-indicator.active {
-            background-color: #4a6bdf;
-        }
-
-        .emoji {
-            font-size: 24px;
-            margin-right: 8px;
-        }
-
-        .special-text {
-            color: #d9534f;
-            font-weight: bold;
-        }
-
-        /* 선택된 옵션 스타일 */
-        .option.selected-first .option-text {
-            font-weight: bold;
-            color: #4a6bdf;
-        }
-
-        .option.dimmed {
-            opacity: 0.6;
-        }
-    </style>
-</head>
-
-<body>
-    <h1>미운 그놈 분석하기</h1>
-    <div class="subtitle">직장 상사편</div>
-
-    <div class="test-container">
-        <!-- 인트로 페이지 -->
-        <!-- 인트로 페이지 부분만 수정합니다 -->
-        <div class="intro-page" id="intro-page">
-            <div class="intro">
-                <p>"하아..." 오늘도 퇴근길에 상사 욕 한 사발 하셨나요?</p>
-                <p>그 사람이 왜 이렇게 밉고 싫은지, 그리고 어떻게 버텨야 할지 이 테스트가 알려드릴게요!</p>
-                <p><strong>각 상황에서 상사의 말과 행동으로 제일 비슷한 선택지 하나, 정반대인 선택지 하나를 골라주세요. (가볍게 하세요! 혹시 회사에서 보고 있다면... 뒤에 조심
-                        👀)</strong></p>
-            </div>
-
-            <!-- 선택 방법 예시 추가 -->
-            <div class="selection-example">
-                <h3>선택 방법 예시</h3>
-                <div class="example-container">
-                    <!-- 예시 이미지 -->
-                    <div class="example-image">
-                        <div class="option example-option">
-                            <div class="option-text">A. 술 먹을때만 가족인척 친한척 한다.</div>
-                            <div class="selection-group">
-                                <!-- disabled 속성과 example-btn 클래스 추가 -->
-                                <button class="selection-btn first selected example-btn" disabled>가장 가깝다</button>
-                                <button class="selection-btn second example-btn" disabled>가장 멀다</button>
-                            </div>
-                        </div>
-                        <div class="option example-option">
-                            <div class="option-text">B. 회식이 친목도모가 아니라 업무의 연장으로 생각한다.</div>
-                            <div class="selection-group">
-                                <button class="selection-btn first example-btn" disabled>가장 가깝다</button>
-                                <button class="selection-btn second example-btn" disabled>가장 멀다</button>
-                            </div>
-                        </div>
-                        <div class="option example-option">
-                            <div class="option-text">C. 회식자리에서 본인의 불만사항 늘어놓기 바쁘다.</div>
-                            <div class="selection-group">
-                                <button class="selection-btn first example-btn" disabled>가장 가깝다</button>
-                                <button class="selection-btn second selected example-btn" disabled>가장 멀다</button>
-                            </div>
-                        </div>
-                        <div class="option example-option">
-                            <div class="option-text">D. 2차 3차 안가는 사람을 기억하고 있다.</div>
-                            <div class="selection-group">
-                                <button class="selection-btn first example-btn" disabled>가장 가깝다</button>
-                                <button class="selection-btn second example-btn" disabled>가장 멀다</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 예시 설명 -->
-                    <div class="example-description">
-                        <p>👉 위 예시에서는:</p>
-                        <ul>
-                            <li><span class="highlight">A 옵션</span>이 상사와 <span class="highlight">'가장 가까운'</span> 행동으로
-                                선택되었습니다.</li>
-                            <li><span class="highlight">C 옵션</span>이 상사와 <span class="highlight">'가장 먼'</span> 행동으로
-                                선택되었습니다.</li>
-                            <li>B와 D 옵션은 선택되지 않았습니다.</li>
-                        </ul>
-                        <p>각 질문마다 반드시 <span class="important">'가장 가까운' 행동 하나</span>와 <span class="important">'가장 먼' 행동
-                                하나</span>만 선택해 주세요!</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 참고 사항 추가 -->
-            <div class="intro-note">
-                <p>💡 <strong>참고:</strong> 너무 진지하게 생각하지 마세요. 회사 컴퓨터로 보고 있다면 빨리 창을 닫으세요!</p>
-            </div>
-
-            <!-- 여기에 광고 추가 -->
-            <div class="ad-container">
-                <div class="ad-header">
-                    <span>추천</span>
-                </div>
-                <div class="ad-content">
-                    <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-YOUR_AD_UNIT_ID"
-                        data-ad-width="250" data-ad-height="250"></ins>
-                    <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
-                </div>
-            </div>
-
-            <div class="button-container">
-                <div></div>
-                <button id="start-btn" class="nav-btn next-btn"
-                    style="width: auto; padding-left: 30px; padding-right: 30px;">테스트 시작</button>
-            </div>
-        </div>
-
-        <!-- 예시를 위한 CSS 스타일 추가 (head 태그 내 style 태그 안에 추가) -->
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>미운 그놈 - 직장 상사편</title>
+        <!-- 파비콘 추가 -->
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
         <style>
-            .selection-example {
-                background-color: #f0f4ff;
-                border-radius: 8px;
-                padding: 15px;
-                margin-bottom: 25px;
+            body {
+                font-family: 'Noto Sans KR', sans-serif;
+                line-height: 1.6;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f5f5f5;
+                color: #333;
             }
 
-            .selection-example h3 {
+            .test-container {
+                background-color: white;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+                min-height: 400px;
+            }
+
+            h1 {
+                color: #333;
                 text-align: center;
-                margin-bottom: 15px;
-                color: #4a6bdf;
+                margin-bottom: 10px;
             }
 
-            .example-container {
-                display: flex;
-                flex-direction: column;
+            .subtitle {
+                text-align: center;
+                color: #666;
+                margin-bottom: 30px;
             }
 
-            .example-image {
-                border: 2px dashed #4a6bdf;
-                border-radius: 8px;
-                padding: 15px;
-                margin-bottom: 15px;
-                background-color: white;
-            }
-
-            .example-option {
-                opacity: 0.85;
-                transform: scale(0.95);
-                margin: 8px 0;
-            }
-
-            .example-option .option-text {
-                font-size: 0.9em;
-            }
-
-            /* 선택된 예시 강조 */
-            .example-option:nth-child(1) {
-                border-left: 4px solid #4a6bdf;
-            }
-
-            .example-option:nth-child(3) {
-                border-left: 4px solid #d9534f;
-            }
-
-            /* 예시 버튼 스타일 추가 */
-            .example-btn {
-                cursor: default !important;
-                /* 커서를 기본으로 변경 */
-                pointer-events: none;
-                /* 포인터 이벤트 비활성화 */
-                opacity: 0.9;
-                /* 약간 불투명하게 하여 비활성화된 느낌 줌 */
-            }
-
-            .example-btn.selected {
-                opacity: 1;
-                /* 선택된 버튼은 완전히 불투명하게 */
-            }
-
-            .example-description {
-                background-color: white;
+            .intro {
+                background-color: #f8f9fa;
                 padding: 15px;
                 border-radius: 8px;
-            }
-
-            .example-description ul {
-                margin: 10px 0;
-                padding-left: 20px;
-            }
-
-            .example-description li {
-                margin-bottom: 8px;
-            }
-
-            .highlight {
-                font-weight: bold;
-                padding: 2px 4px;
-                border-radius: 4px;
-            }
-
-            .example-description li:nth-child(1) .highlight:first-child {
-                background-color: rgba(74, 107, 223, 0.2);
-            }
-
-            .example-description li:nth-child(1) .highlight:last-child {
-                background-color: rgba(74, 107, 223, 0.2);
-                color: #4a6bdf;
-            }
-
-            .example-description li:nth-child(2) .highlight:first-child {
-                background-color: rgba(217, 83, 79, 0.2);
-            }
-
-            .example-description li:nth-child(2) .highlight:last-child {
-                background-color: rgba(217, 83, 79, 0.2);
-                color: #d9534f;
-            }
-
-            .important {
-                font-weight: bold;
-                background-color: #fff3cd;
-                padding: 2px 4px;
-                border-radius: 4px;
-            }
-
-            .intro-note {
-                background-color: #e8f5e9;
-                border-radius: 8px;
-                padding: 12px;
                 margin-bottom: 25px;
             }
 
-            /* 반응형 스타일 추가 */
-            @media (min-width: 768px) {
+            .question {
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 15px;
+                background-color: #f0f4ff;
+                padding: 12px;
+                border-radius: 8px;
+            }
+
+            .options {
+                margin-bottom: 30px;
+            }
+
+            .option {
+                border: 1px solid #e9ecef;
+                background-color: #f8f9fa;
+                margin: 10px 0;
+                padding: 12px 15px;
+                border-radius: 8px;
+                transition: all 0.2s;
+            }
+
+            .option:hover {
+                background-color: #e9ecef;
+            }
+
+            .option-text {
+                margin-bottom: 10px;
+            }
+
+            .selection-group {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .selection-btn {
+                flex: 1;
+                padding: 8px 0;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                background: none;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.2s;
+                text-align: center;
+            }
+
+            .selection-btn:hover {
+                background-color: #f1f1f1;
+            }
+
+            .selection-btn.first {
+                border-color: #4a6bdf;
+                color: #4a6bdf;
+            }
+
+            .selection-btn.first.selected {
+                background-color: #4a6bdf;
+                color: white;
+            }
+
+            .selection-btn.second {
+                border-color: #d9534f;
+                /* 빨간색 테두리 */
+                color: #d9534f;
+                /* 빨간색 글자 */
+            }
+
+            .selection-btn.second.selected {
+                background-color: #d9534f;
+                /* 빨간색 배경 */
+                color: white;
+            }
+
+            .option.selected-first .option-text {
+                font-weight: bold;
+                color: #4a6bdf;
+            }
+
+            .option.selected-second .option-text {
+                font-weight: bold;
+                color: #d9534f;
+                /* 빨간색 글자 */
+            }
+
+            .button-container {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+            }
+
+            .nav-btn {
+                padding: 12px;
+                background-color: #4a6bdf;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            .nav-btn:hover {
+                background-color: #3a54b4;
+            }
+
+            .nav-btn:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+
+            .prev-btn {
+                flex: 0 0 auto;
+                width: 100px;
+            }
+
+            .next-btn,
+            .submit-btn {
+                flex: 0 0 auto;
+                width: 100px;
+            }
+
+            .error {
+                color: #d9534f;
+                margin-bottom: 15px;
+                display: none;
+            }
+
+            .progress-container {
+                margin: 20px 0;
+            }
+
+            .progress-bar {
+                width: 100%;
+                height: 10px;
+                background-color: #e9ecef;
+                border-radius: 5px;
+                overflow: hidden;
+            }
+
+            .progress {
+                height: 100%;
+                background-color: #4a6bdf;
+                width: 0%;
+                transition: width 0.3s;
+            }
+
+            .question-number {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 5px;
+            }
+
+            /* 질문 페이지 표시/숨김 */
+            .question-page {
+                display: none;
+            }
+
+            .question-page.active {
+                display: block;
+            }
+
+            .intro-page {
+                display: block;
+            }
+
+            .page-indicators {
+                display: flex;
+                justify-content: center;
+                margin: 20px 0;
+            }
+
+            .page-indicator {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: #e9ecef;
+                margin: 0 5px;
+                cursor: pointer;
+            }
+
+            .page-indicator.active {
+                background-color: #4a6bdf;
+            }
+
+            .emoji {
+                font-size: 24px;
+                margin-right: 8px;
+            }
+
+            .special-text {
+                color: #d9534f;
+                font-weight: bold;
+            }
+
+            /* 선택된 옵션 스타일 */
+            .option.selected-first .option-text {
+                font-weight: bold;
+                color: #4a6bdf;
+            }
+
+            .option.dimmed {
+                opacity: 0.6;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>미운 그놈 분석하기</h1>
+        <div class="subtitle">직장 상사편</div>
+
+        <div class="test-container">
+            <!-- 인트로 페이지 -->
+            <!-- 인트로 페이지 부분만 수정합니다 -->
+            <div class="intro-page" id="intro-page">
+                <div class="intro">
+                    <p>"하아..." 오늘도 퇴근길에 상사 욕 한 사발 하셨나요?</p>
+                    <p>그 사람이 왜 이렇게 밉고 싫은지, 그리고 어떻게 버텨야 할지 이 테스트가 알려드릴게요!</p>
+                    <p><strong>각 상황에서 상사의 말과 행동으로 제일 비슷한 선택지 하나, 정반대인 선택지 하나를 골라주세요. (가볍게 하세요! 혹시 회사에서 보고 있다면... 뒤에 조심
+                            👀)</strong></p>
+                </div>
+
+                <!-- 선택 방법 예시 추가 -->
+                <div class="selection-example">
+                    <h3>선택 방법 예시</h3>
+                    <div class="example-container">
+                        <!-- 예시 이미지 -->
+                        <div class="example-image">
+                            <div class="option example-option">
+                                <div class="option-text">A. 술 먹을때만 가족인척 친한척 한다.</div>
+                                <div class="selection-group">
+                                    <!-- disabled 속성과 example-btn 클래스 추가 -->
+                                    <button class="selection-btn first selected example-btn" disabled>가장 가깝다</button>
+                                    <button class="selection-btn second example-btn" disabled>가장 멀다</button>
+                                </div>
+                            </div>
+                            <div class="option example-option">
+                                <div class="option-text">B. 회식이 친목도모가 아니라 업무의 연장으로 생각한다.</div>
+                                <div class="selection-group">
+                                    <button class="selection-btn first example-btn" disabled>가장 가깝다</button>
+                                    <button class="selection-btn second example-btn" disabled>가장 멀다</button>
+                                </div>
+                            </div>
+                            <div class="option example-option">
+                                <div class="option-text">C. 회식자리에서 본인의 불만사항 늘어놓기 바쁘다.</div>
+                                <div class="selection-group">
+                                    <button class="selection-btn first example-btn" disabled>가장 가깝다</button>
+                                    <button class="selection-btn second selected example-btn" disabled>가장 멀다</button>
+                                </div>
+                            </div>
+                            <div class="option example-option">
+                                <div class="option-text">D. 2차 3차 안가는 사람을 기억하고 있다.</div>
+                                <div class="selection-group">
+                                    <button class="selection-btn first example-btn" disabled>가장 가깝다</button>
+                                    <button class="selection-btn second example-btn" disabled>가장 멀다</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 예시 설명 -->
+                        <div class="example-description">
+                            <p>👉 위 예시에서는:</p>
+                            <ul>
+                                <li><span class="highlight">A 옵션</span>이 상사와 <span class="highlight">'가장 가까운'</span> 행동으로
+                                    선택되었습니다.</li>
+                                <li><span class="highlight">C 옵션</span>이 상사와 <span class="highlight">'가장 먼'</span> 행동으로
+                                    선택되었습니다.</li>
+                                <li>B와 D 옵션은 선택되지 않았습니다.</li>
+                            </ul>
+                            <p>각 질문마다 반드시 <span class="important">'가장 가까운' 행동 하나</span>와 <span class="important">'가장 먼' 행동
+                                    하나</span>만 선택해 주세요!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 참고 사항 추가 -->
+                <div class="intro-note">
+                    <p>💡 <strong>참고:</strong> 너무 진지하게 생각하지 마세요. 회사 컴퓨터로 보고 있다면 빨리 창을 닫으세요!</p>
+                </div>
+
+                <!-- 여기에 광고 추가 -->
+                <div class="ad-container">
+                    <div class="ad-header">
+                        <span>추천</span>
+                    </div>
+                    <div class="ad-content">
+                        <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-YOUR_AD_UNIT_ID"
+                            data-ad-width="250" data-ad-height="250"></ins>
+                        <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+                    </div>
+                </div>
+
+                <div class="button-container">
+                    <div></div>
+                    <button id="start-btn" class="nav-btn next-btn"
+                        style="width: auto; padding-left: 30px; padding-right: 30px;">테스트 시작</button>
+                </div>
+            </div>
+
+            <!-- 예시를 위한 CSS 스타일 추가 (head 태그 내 style 태그 안에 추가) -->
+            <style>
+                .selection-example {
+                    background-color: #f0f4ff;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 25px;
+                }
+
+                .selection-example h3 {
+                    text-align: center;
+                    margin-bottom: 15px;
+                    color: #4a6bdf;
+                }
+
                 .example-container {
-                    flex-direction: row;
-                    align-items: flex-start;
-                    gap: 20px;
+                    display: flex;
+                    flex-direction: column;
                 }
 
                 .example-image {
-                    flex: 2;
+                    border: 2px dashed #4a6bdf;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 15px;
+                    background-color: white;
+                }
+
+                .example-option {
+                    opacity: 0.85;
+                    transform: scale(0.95);
+                    margin: 8px 0;
+                }
+
+                .example-option .option-text {
+                    font-size: 0.9em;
+                }
+
+                /* 선택된 예시 강조 */
+                .example-option:nth-child(1) {
+                    border-left: 4px solid #4a6bdf;
+                }
+
+                .example-option:nth-child(3) {
+                    border-left: 4px solid #d9534f;
+                }
+
+                /* 예시 버튼 스타일 추가 */
+                .example-btn {
+                    cursor: default !important;
+                    /* 커서를 기본으로 변경 */
+                    pointer-events: none;
+                    /* 포인터 이벤트 비활성화 */
+                    opacity: 0.9;
+                    /* 약간 불투명하게 하여 비활성화된 느낌 줌 */
+                }
+
+                .example-btn.selected {
+                    opacity: 1;
+                    /* 선택된 버튼은 완전히 불투명하게 */
                 }
 
                 .example-description {
-                    flex: 1;
-                }
-            }
-        </style>
-
-        <!-- 프로그레스 바 -->
-        <div class="progress-container" id="progress-container" style="display: none;">
-            <div class="progress-bar">
-                <div class="progress" id="progress-bar"></div>
-            </div>
-        </div>
-
-        <!-- 페이지 인디케이터 -->
-        <div class="page-indicators" id="page-indicators" style="display: none;">
-            <!-- JavaScript로 동적 생성 -->
-        </div>
-
-        <!-- 질문 1 -->
-        <div class="question-page" id="question-page-1">
-            <div class="question-number">질문 1/7</div>
-            <div class="question"><span class="emoji">🚨</span>맡은 업무가 예상보다 늦어질 것 같다고 보고했을 때, 그 상사는 어떻게 반응하나요?</div>
-            <div class="options">
-                <div class="option" id="option-1-A">
-                    <div class="option-text">지연 원인을 파악하고 우선순위 조정이나 추가 지원을 고려하는 등 문제해결에 집중한다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="1" data-option="A"
-                            data-stats="합리성:+14">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="1" data-option="A"
-                            data-stats="합리성:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-1-B">
-                    <div class="option-text">"여태까지 뭘 했냐"며 압박한다. 본인은 일을 거의 안 하면서도 내 업무를 사소하게 치부하며 그것도 못하냐는 식으로 몰아붙인다. </div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="1" data-option="B"
-                            data-stats="꼰대력:+14,내로남불:+14,합리성:-5,갑질지수:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="1" data-option="B"
-                            data-stats="꼰대력:-14,내로남불:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-1-C">
-                    <div class="option-text">일정이 원래 빡빡했는데도 그런 부분은 무시하고 모든 책임을 내게 떠넘긴다. 본인은 자기 일을 다 했다며 문제와 관련 없다는 식으로 발을 뺀다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="1" data-option="C"
-                            data-stats="갑질지수:+14,책임회피:+14,합리성:-5,무능력:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="1" data-option="C"
-                            data-stats="갑질지수:-14,책임회피:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-1-D">
-                    <div class="option-text">"네가 담당이니 알아서 해"라며 선을 긋는다. 제대로 된 지원은 없으면서 마감기한은 강조하기 때문에 야근과 주말 특근은 오롯이 내 몫이 된다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="1" data-option="D"
-                            data-stats="무능력:+14,워라밸파괴:+14,합리성:-5,책임회피:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="1" data-option="D"
-                            data-stats="무능력:-14,워라밸파괴:-14">가장 멀다</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="error" id="error-message-1">두 개의 선택지를 골라주세요! 상사와 '가장 가까운' 행동, '가장 먼' 행동 각각 하나씩!</div>
-
-            <div class="button-container">
-                <button class="nav-btn prev-btn" disabled>이전</button>
-                <button class="nav-btn next-btn" id="next-btn-1">다음</button>
-            </div>
-        </div>
-
-        <!-- 질문 2 -->
-        <div class="question-page" id="question-page-2">
-            <div class="question-number">질문 2/7</div>
-            <div class="question"><span class="emoji">⏰</span>당신이 예기치 않게 지각한다는 것을 보고했을 때, 그 상사는 어떻게 반응하나요?</div>
-            <div class="options">
-                <div class="option" id="option-2-A">
-                    <div class="option-text"> "제정신이냐?"며 난리친다. 팀 전체의 기강이 해이해졌다며 일을 키우고, 이를 핑계로 불필요한 규율들을 만들어낸다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="2" data-option="A"
-                            data-stats="꼰대력:+14,갑질지수:+14,합리성:-5,워라밸파괴:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="2" data-option="A"
-                            data-stats="꼰대력:+14,갑질지수:+14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-2-B">
-                    <div class="option-text">아무런 조치도 취하지 않고 방치한다. 지각으로 발생하는 문제들을 알면서도 방치하고, 이로 인한 모든 책임을 나에게 떠넘긴다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="2" data-option="B"
-                            data-stats="무능력:+14, 책임회피:+14,합리성:-5,갑질지수:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="2" data-option="B"
-                            data-stats="무능력:-14, 책임회피:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-2-C">
-                    <div class="option-text">언제 도착할 수 있는지 물어보며 상황을 파악하고 대응한다. 필요시 "지각은 하지 마세요"와 같이 조용히 주의를 주기도 한다.
-                    </div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="2" data-option="C"
-                            data-stats="합리성:+14">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="2" data-option="C"
-                            data-stats="합리성:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-2-D">
-                    <div class="option-text">내 지각을 죽을죄 지은 것처럼 취급하면서, 정작 본인은 지각하면 '외근'이나 '관공서 업무'로 처리한다. 특히 '기본도 못 지키는 놈'과 같은 모욕적인 말로 나를 깎아내리기 바쁘다.
-                    </div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="2" data-option="D"
-                            data-stats="내로남불:+14, 워라밸파괴:+14,합리성:-5,갑질지수:+7,꼰대력+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="2" data-option="D"
-                            data-stats="내로남불:-14, 워라밸파괴:-14">가장 멀다</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="error" id="error-message-2">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
-
-            <div class="button-container">
-                <button class="nav-btn prev-btn" id="prev-btn-2">이전</button>
-                <button class="nav-btn next-btn" id="next-btn-2">다음</button>
-            </div>
-        </div>
-
-        <!-- 질문 3 -->
-        <div class="question-page" id="question-page-3">
-            <div class="question-number">질문 3/7</div>
-            <div class="question"><span class="emoji">🆘</span>업무와 관련해 도움을 요청했을 때, 상사는 어떻게 대응하나요?</div>
-            <div class="options">
-                <div class="option" id="option-3-A">
-                    <div class="option-text">"니가 맡은 일은 니가 알아서 해야지!"라고 말한다. 본인은 일이 많을 땐 업무를 떠넘기면서도 내가 도움을 요청하면 혼자 못하냐며 나무란다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="3" data-option="A"
-                            data-stats="내로남불:+14, 꼰대력:+14,합리성:-5,갑질지수:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="3" data-option="A"
-                            data-stats="내로남불:-14, 꼰대력:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-3-B">
-                    <div class="option-text">내 업무에 대해 아는 게 전혀 없으면서 아는 척만 한다. 결국 도움은 주지 않고 "담당자가 알아서 해야지"라는 말로 마무리한다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="3" data-option="B"
-                            data-stats="무능력:+14, 책임회피:+14,합리성:-5,갑질지수:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="3" data-option="B"
-                            data-stats="무능력:-14, 책임회피:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-3-C">
-                    <div class="option-text">어떤 도움이 필요한지 파악하고 조언해준다. 급한 일이라 판단되면 다른 지원을 붙여주거나 직접 도와 업무를 마무리해준다.
-                    </div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="3" data-option="C"
-                            data-stats="합리성:+14">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="3" data-option="C"
-                            data-stats="합리성:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-3-D">
-                    <div class="option-text">도움을 주는 듯하지만 불필요한 업무만 늘리고 방향을 바꿔 혼란만 가중시킨다. 결국 야근은 기본이고 전체 업무량만 기하급수적으로 늘어난다. </div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="3" data-option="D"
-                            data-stats="갑질지수:+14, 워라밸파괴:+14,합리성:-5,무능력:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="3" data-option="D"
-                            data-stats="갑질지수:-14, 워라밸파괴:-14">가장 멀다</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="error" id="error-message-3">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
-
-            <div class="button-container">
-                <button class="nav-btn prev-btn" id="prev-btn-3">이전</button>
-                <button class="nav-btn next-btn" id="next-btn-3">다음</button>
-            </div>
-        </div>
-
-        <!-- 질문 4 -->
-        <div class="question-page" id="question-page-4">
-            <div class="question-number">질문 4/7</div>
-            <div class="question"><span class="emoji">📅</span>개인 사유로 연차를 신청했을 때, 혹은 하루 휴무를 요청했을 때, 상사는 어떤 반응을 보이나요?</div>
-            <div class="options">
-                <div class="option" id="option-4-A">
-                    <div class="option-text">사유를 꼬치꼬치 캐묻고 거의 허락해주지 않는다. "나 때는..."을 운운하며 연차를 권리가 아닌 특혜로 여긴다.
-                    </div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="4" data-option="A"
-                            data-stats="워라밸파괴:+14, 꼰대력:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="4" data-option="A"
-                            data-stats="워라밸파괴:-14, 꼰대력:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-4-B">
-                    <div class="option-text">상위 상사에게 직접 보고하라고 떠넘긴다. 내가 없는 동안 생길 업무 상황에 대해 전혀 이해하지 못하고, 문제 발생 시 해결할 능력도 없다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="4" data-option="B"
-                            data-stats="책임회피:+14, 무능력:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="4" data-option="B"
-                            data-stats="책임회피:-14, 무능력:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-4-C">
-                    <div class="option-text">내 연차 날짜 앞뒤로 휴일이 있으면 절대 허락하지 않는다. 본인은 항상 가정사를 핑계로 먼저 쉬고, 내 연차 사유는 그 앞에서 무의미해진다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="4" data-option="C"
-                            data-stats="내로남불:+14, 갑질지수:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="4" data-option="C"
-                            data-stats="내로남불:-14, 갑질지수:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-4-D">
-                    <div class="option-text">간단히 사유를 물어보는 경우도 있지만, 그렇다 하더라도 깊게 물어보지 않고 연차를 허락해준다. 연차는 직장인의 당연한 권리라는 말에 동의할 사람이다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="4" data-option="D"
-                            data-stats="합리성:+14">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="4" data-option="D"
-                            data-stats="합리성:-14">가장 멀다</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="error" id="error-message-4">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
-
-            <div class="button-container">
-                <button class="nav-btn prev-btn" id="prev-btn-4">이전</button>
-                <button class="nav-btn next-btn" id="next-btn-4">다음</button>
-            </div>
-        </div>
-
-        <!-- 질문 5 -->
-        <div class="question-page" id="question-page-5">
-            <div class="question-number">질문 5/7</div>
-            <div class="question"><span class="emoji">🔍</span>내 업무에 관하여 지적할 때, 그 상사는 어떤식으로 행동하나요?</div>
-            <div class="options">
-                <div class="option" id="option-5-A">
-                    <div class="option-text">문제점을 정리한 후 나를 불러 하나씩 설명하고 해결책을 제시한다. 현재 문제를 해결하면서 내 업무능력 향상까지 신경쓴다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="5" data-option="A"
-                            data-stats="합리성:+14">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="5" data-option="A"
-                            data-stats="합리성:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-5-B">
-                    <div class="option-text">한 시간 넘게 설명해도 무슨 말인지 알 수 없을 정도로 애매모호하다. 업무시간만 지연되고 불필요한 프로세스만 추가되어 결국 야근으로 이어진다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="5" data-option="B"
-                            data-stats="워라밸파괴:+14, 꼰대력:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="5" data-option="B"
-                            data-stats="워라밸파괴:-14, 꼰대력:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-5-C">
-                    <div class="option-text">자신의 상사가 지적한 내용을 그대로 전달할 뿐이다. 업무를 제대로 파악하지 못해 피드백이 허술하고, 어떻게 수정해야 할지도 명확히 설명하지 못한다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="5" data-option="C"
-                            data-stats="책임회피:+14, 무능력:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="5" data-option="C"
-                            data-stats="책임회피:-14, 무능력:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-5-D">
-                    <div class="option-text">"이런 기본적인 일도 제대로 못해?"라며 폭언과 인격모독을 섞어가며 지적한다. 사전에 확인받은 업무인데도 자신은 그런 말을 한 적 없다고 뻔뻔하게 부인한다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="5" data-option="D"
-                            data-stats="내로남불:+14, 갑질지수:+14,합리성:-5,꼰대력:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="5" data-option="D"
-                            data-stats="내로남불:-14, 갑질지수:-14">가장 멀다</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="error" id="error-message-5">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
-
-            <div class="button-container">
-                <button class="nav-btn prev-btn" id="prev-btn-5">이전</button>
-                <button class="nav-btn next-btn" id="next-btn-5">다음</button>
-            </div>
-        </div>
-
-        <!-- 질문 6 -->
-        <div class="question-page" id="question-page-6">
-            <div class="question-number">질문 6/7</div>
-            <div class="question"><span class="emoji">🍽️</span>오전을 견뎌내고 찾아온 점심시간, 그 상사는 어떻게 행동하나요?</div>
-            <div class="options">
-                <div class="option" id="option-6-A">
-                    <div class="option-text">식사를 마치고 돌아와 자기만의 휴식시간을 갖는다. 다른 직원들이 일을 하던 쉬던 크게 신경쓰지 않는 모습이다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="6" data-option="A"
-                            data-stats="합리성:+14">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="6" data-option="A"
-                            data-stats="합리성:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-6-B">
-                    <div class="option-text">점심시간에 자료정리를 요구하고는 본인은 타 부서 사람들과 커피를 마시러 나간다. 내 점심시간은 무시한 채 일만 시킨다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="6" data-option="B"
-                            data-stats="꼰대력:+14, 내로남불:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="6" data-option="B"
-                            data-stats="꼰대력:-14, 내로남불:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-6-C">
-                    <div class="option-text">식사 중에도 끊임없이 업무 이야기를 하며 마감기한 압박만 늘어놓는다. 업무 방향에 대한 피드백은 없으면서 본인은 제일 먼저 쉬러 간다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="6" data-option="C"
-                            data-stats="책임회피:+14, 무능력:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="6" data-option="C"
-                            data-stats="책임회피:-14, 무능력:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-6-D">
-                    <div class="option-text"> 나는 혼자 여유롭게 먹고 싶은데 무조건 같이 식사하기를 강요한다. 팀워크를 핑계로 붙잡아 놓고 관심 없는 사적인 이야기나 업무지시를 늘어놓는다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="6" data-option="D"
-                            data-stats="워라밸파괴:+14, 갑질지수:+14,합리성:-5,꼰대력:+7">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="6" data-option="D"
-                            data-stats="워라밸파괴:-14, 갑질지수:-14">가장 멀다</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="error" id="error-message-6">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
-
-            <div class="button-container">
-                <button class="nav-btn prev-btn" id="prev-btn-6">이전</button>
-                <button class="nav-btn next-btn" id="next-btn-6">다음</button>
-            </div>
-        </div>
-
-        <!-- 질문 7 -->
-        <div class="question-page" id="question-page-7">
-            <div class="question-number">질문 7/7</div>
-            <div class="question"><span class="emoji">💼</span>그 상사는 회의시간에 어떻게 행동하나요?</div>
-            <div class="options">
-                <div class="option" id="option-7-A">
-                    <div class="option-text">회의안건을 정하지 않고 쓸데없는 말로 시간을 낭비한다. 본인은 30분 넘게 떠들면서 다른 사람 의견은 바로 끊어버린다. 또한 매번 회의시간이 너무 길어서 내 업무를 할 시간이 부족하다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="7" data-option="A"
-                            data-stats="꼰대력:+14, 내로남불:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="7" data-option="A"
-                            data-stats="꼰대력:-14, 내로남불:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-7-B">
-                    <div class="option-text">회의 주제를 미리 공유하고 모두의 의견을 경청한다. 담당자들의 의견을 존중하며 방향이 어긋날 때만 적절히 피드백을 준다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="7" data-option="B"
-                            data-stats="합리성:+14">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="7" data-option="B"
-                            data-stats="합리성:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-7-C">
-                    <div class="option-text">회의 방향을 잡지 못하고 정확한 문제 파악도 못한다. 업무 담당자들에게 책임만 떠넘기다 회의가 끝나면 해야 할 일만 산더미처럼 쌓여있다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="7" data-option="C"
-                            data-stats="무능력:+14, 책임회피:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="7" data-option="C"
-                            data-stats="무능력:-14, 책임회피:-14">가장 멀다</button>
-                    </div>
-                </div>
-                <div class="option" id="option-7-D">
-                    <div class="option-text">회의를 최소 한 시간은 잡고 같은 말만 반복한다. 업무와 무관한 잔소리가 많고, 특정 사람들을 짜증 섞인 목소리로 몰아세워 자존감만 깎아내린다.</div>
-                    <div class="selection-group">
-                        <button class="selection-btn first" data-question="7" data-option="D"
-                            data-stats="꼰대력:+14, 갑질지수:+14,합리성:-5">가장 가깝다</button>
-                        <button class="selection-btn second" data-question="7" data-option="D"
-                            data-stats="꼰대력:-14, 갑질지수:-14">가장 멀다</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="error" id="error-message-7">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
-
-            <div class="button-container">
-                <button class="nav-btn prev-btn" id="prev-btn-7">이전</button>
-                <button class="nav-btn submit-btn" id="submit-btn">결과 보기</button>
-            </div>
-        </div>
-
-        <!-- JavaScript 코드 수정 부분 -->
-        <script>
-            // 능력치 정의
-            const statTypes = {
-                '꼰대력': { color: '#8e44ad', description: '과거 방식을 고집하고 변화를 거부하는 정도' },
-                '내로남불': { color: '#e74c3c', description: '본인에게는 관대하고 타인에게는 엄격한 정도' },
-                '갑질지수': { color: '#c0392b', description: '권위적 태도로 압박하고 공격하는 정도' },
-                '책임회피': { color: '#f39c12', description: '실패와 문제를 타인에게 전가하는 정도' },
-                '워라밸파괴': { color: '#d35400', description: '개인 시간을 존중하지 않고 침해하는 정도' },
-                '무능력': { color: '#7f8c8d', description: '실무능력과 판단력이 부족한 정도' },
-                '합리성': { color: '#2ecc71', description: '공정하고 합리적인 사고를 하는 정도' }
-            };
-
-            // 결과 저장 객체
-            const statsResults = {};
-            Object.keys(statTypes).forEach(stat => {
-                statsResults[stat] = 0;
-            });
-
-            // 질문 페이지 관리
-            const totalPages = 7;
-            let currentPage = 0; // 0은 인트로 페이지, 1-7은 질문 페이지
-
-            // 각 질문별 선택 상태 저장
-            const selections = {};
-
-            // 페이지 인디케이터 생성
-            function createPageIndicators() {
-                const container = document.getElementById('page-indicators');
-                if (!container) return; // 컨테이너가 없으면 함수 종료
-
-                // 기존 인디케이터 제거
-                container.innerHTML = '';
-
-                // 인트로 페이지 인디케이터
-                const introIndicator = document.createElement('div');
-                introIndicator.className = 'page-indicator active';
-                introIndicator.dataset.page = 0;
-                container.appendChild(introIndicator);
-
-                // 질문 페이지 인디케이터
-                for (let i = 1; i <= totalPages; i++) {
-                    const indicator = document.createElement('div');
-                    indicator.className = 'page-indicator';
-                    indicator.dataset.page = i;
-                    container.appendChild(indicator);
-
-                    // 클릭 이벤트 추가
-                    indicator.addEventListener('click', function () {
-                        navigateToPage(parseInt(this.dataset.page));
-                    });
-                }
-            }
-
-            // 페이지 이동 함수를 수정하여 스크롤 기능 추가
-            function navigateToPage(pageNum) {
-                // 현재 페이지가 유효한지 확인 (다음 버튼 클릭 시)
-                if (pageNum > currentPage && currentPage > 0) {
-                    const isValid = validatePage(currentPage);
-                    if (!isValid) return;
+                    background-color: white;
+                    padding: 15px;
+                    border-radius: 8px;
                 }
 
-                // 이동할 페이지가 범위 내인지 확인
-                if (pageNum < 0 || pageNum > totalPages) return;
-
-                // 현재 페이지 숨기기
-                if (currentPage === 0) {
-                    document.getElementById('intro-page').style.display = 'none';
-                } else {
-                    document.getElementById(`question-page-${currentPage}`).classList.remove('active');
+                .example-description ul {
+                    margin: 10px 0;
+                    padding-left: 20px;
                 }
 
-                // 새 페이지 표시
-                currentPage = pageNum;
+                .example-description li {
+                    margin-bottom: 8px;
+                }
 
-                if (currentPage === 0) {
-                    document.getElementById('intro-page').style.display = 'block';
-                    document.getElementById('progress-container').style.display = 'none';
-                    document.getElementById('page-indicators').style.display = 'none';
-                } else {
-                    document.getElementById(`question-page-${currentPage}`).classList.add('active');
-                    document.getElementById('progress-container').style.display = 'block';
-                    document.getElementById('page-indicators').style.display = 'flex';
-                    updateProgress();
+                .highlight {
+                    font-weight: bold;
+                    padding: 2px 4px;
+                    border-radius: 4px;
+                }
+
+                .example-description li:nth-child(1) .highlight:first-child {
+                    background-color: rgba(74, 107, 223, 0.2);
+                }
+
+                .example-description li:nth-child(1) .highlight:last-child {
+                    background-color: rgba(74, 107, 223, 0.2);
+                    color: #4a6bdf;
+                }
+
+                .example-description li:nth-child(2) .highlight:first-child {
+                    background-color: rgba(217, 83, 79, 0.2);
+                }
+
+                .example-description li:nth-child(2) .highlight:last-child {
+                    background-color: rgba(217, 83, 79, 0.2);
+                    color: #d9534f;
+                }
+
+                .important {
+                    font-weight: bold;
+                    background-color: #fff3cd;
+                    padding: 2px 4px;
+                    border-radius: 4px;
+                }
+
+                .intro-note {
+                    background-color: #e8f5e9;
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin-bottom: 25px;
+                }
+
+                /* 반응형 스타일 추가 */
+                @media (min-width: 768px) {
+                    .example-container {
+                        flex-direction: row;
+                        align-items: flex-start;
+                        gap: 20px;
+                    }
+
+                    .example-image {
+                        flex: 2;
+                    }
+
+                    .example-description {
+                        flex: 1;
+                    }
+                }
+            </style>
+
+            <!-- 프로그레스 바 -->
+            <div class="progress-container" id="progress-container" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <!-- 페이지 인디케이터 -->
+            <div class="page-indicators" id="page-indicators" style="display: none;">
+                <!-- JavaScript로 동적 생성 -->
+            </div>
+
+            <!-- 질문 1 -->
+            <div class="question-page" id="question-page-1">
+                <div class="question-number">질문 1/7</div>
+                <div class="question"><span class="emoji">🚨</span>맡은 업무가 예상보다 늦어질 것 같다고 보고했을 때, 그 상사는 어떻게 반응하나요?</div>
+                <div class="options">
+                    <div class="option" id="option-1-A">
+                        <div class="option-text">지연 원인을 파악하고 우선순위 조정이나 추가 지원을 고려하는 등 문제해결에 집중한다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="1" data-option="A"
+                                data-stats="합리성:+14">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="1" data-option="A"
+                                data-stats="합리성:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-1-B">
+                        <div class="option-text">"여태까지 뭘 했냐"며 압박한다. 본인은 일을 거의 안 하면서도 내 업무를 사소하게 치부하며 그것도 못하냐는 식으로 몰아붙인다. </div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="1" data-option="B"
+                                data-stats="꼰대력:+14,내로남불:+14,합리성:-5,갑질지수:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="1" data-option="B"
+                                data-stats="꼰대력:-14,내로남불:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-1-C">
+                        <div class="option-text">일정이 원래 빡빡했는데도 그런 부분은 무시하고 모든 책임을 내게 떠넘긴다. 본인은 자기 일을 다 했다며 문제와 관련 없다는 식으로 발을 뺀다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="1" data-option="C"
+                                data-stats="갑질지수:+14,책임회피:+14,합리성:-5,무능력:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="1" data-option="C"
+                                data-stats="갑질지수:-14,책임회피:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-1-D">
+                        <div class="option-text">"네가 담당이니 알아서 해"라며 선을 긋는다. 제대로 된 지원은 없으면서 마감기한은 강조하기 때문에 야근과 주말 특근은 오롯이 내 몫이 된다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="1" data-option="D"
+                                data-stats="무능력:+14,워라밸파괴:+14,합리성:-5,책임회피:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="1" data-option="D"
+                                data-stats="무능력:-14,워라밸파괴:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error" id="error-message-1">두 개의 선택지를 골라주세요! 상사와 '가장 가까운' 행동, '가장 먼' 행동 각각 하나씩!</div>
+
+                <div class="button-container">
+                    <button class="nav-btn prev-btn" disabled>이전</button>
+                    <button class="nav-btn next-btn" id="next-btn-1">다음</button>
+                </div>
+            </div>
+
+            <!-- 질문 2 -->
+            <div class="question-page" id="question-page-2">
+                <div class="question-number">질문 2/7</div>
+                <div class="question"><span class="emoji">⏰</span>당신이 예기치 않게 지각한다는 것을 보고했을 때, 그 상사는 어떻게 반응하나요?</div>
+                <div class="options">
+                    <div class="option" id="option-2-A">
+                        <div class="option-text"> "제정신이냐?"며 난리친다. 팀 전체의 기강이 해이해졌다며 일을 키우고, 이를 핑계로 불필요한 규율들을 만들어낸다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="2" data-option="A"
+                                data-stats="꼰대력:+14,갑질지수:+14,합리성:-5,워라밸파괴:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="2" data-option="A"
+                                data-stats="꼰대력:+14,갑질지수:+14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-2-B">
+                        <div class="option-text">아무런 조치도 취하지 않고 방치한다. 지각으로 발생하는 문제들을 알면서도 방치하고, 이로 인한 모든 책임을 나에게 떠넘긴다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="2" data-option="B"
+                                data-stats="무능력:+14, 책임회피:+14,합리성:-5,갑질지수:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="2" data-option="B"
+                                data-stats="무능력:-14, 책임회피:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-2-C">
+                        <div class="option-text">언제 도착할 수 있는지 물어보며 상황을 파악하고 대응한다. 필요시 "지각은 하지 마세요"와 같이 조용히 주의를 주기도 한다.
+                        </div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="2" data-option="C"
+                                data-stats="합리성:+14">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="2" data-option="C"
+                                data-stats="합리성:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-2-D">
+                        <div class="option-text">내 지각을 죽을죄 지은 것처럼 취급하면서, 정작 본인은 지각하면 '외근'이나 '관공서 업무'로 처리한다. 특히 '기본도 못 지키는 놈'과 같은 모욕적인 말로 나를 깎아내리기 바쁘다.
+                        </div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="2" data-option="D"
+                                data-stats="내로남불:+14, 워라밸파괴:+14,합리성:-5,갑질지수:+7,꼰대력+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="2" data-option="D"
+                                data-stats="내로남불:-14, 워라밸파괴:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error" id="error-message-2">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
+
+                <div class="button-container">
+                    <button class="nav-btn prev-btn" id="prev-btn-2">이전</button>
+                    <button class="nav-btn next-btn" id="next-btn-2">다음</button>
+                </div>
+            </div>
+
+            <!-- 질문 3 -->
+            <div class="question-page" id="question-page-3">
+                <div class="question-number">질문 3/7</div>
+                <div class="question"><span class="emoji">🆘</span>업무와 관련해 도움을 요청했을 때, 상사는 어떻게 대응하나요?</div>
+                <div class="options">
+                    <div class="option" id="option-3-A">
+                        <div class="option-text">"니가 맡은 일은 니가 알아서 해야지!"라고 말한다. 본인은 일이 많을 땐 업무를 떠넘기면서도 내가 도움을 요청하면 혼자 못하냐며 나무란다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="3" data-option="A"
+                                data-stats="내로남불:+14, 꼰대력:+14,합리성:-5,갑질지수:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="3" data-option="A"
+                                data-stats="내로남불:-14, 꼰대력:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-3-B">
+                        <div class="option-text">내 업무에 대해 아는 게 전혀 없으면서 아는 척만 한다. 결국 도움은 주지 않고 "담당자가 알아서 해야지"라는 말로 마무리한다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="3" data-option="B"
+                                data-stats="무능력:+14, 책임회피:+14,합리성:-5,갑질지수:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="3" data-option="B"
+                                data-stats="무능력:-14, 책임회피:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-3-C">
+                        <div class="option-text">어떤 도움이 필요한지 파악하고 조언해준다. 급한 일이라 판단되면 다른 지원을 붙여주거나 직접 도와 업무를 마무리해준다.
+                        </div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="3" data-option="C"
+                                data-stats="합리성:+14">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="3" data-option="C"
+                                data-stats="합리성:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-3-D">
+                        <div class="option-text">도움을 주는 듯하지만 불필요한 업무만 늘리고 방향을 바꿔 혼란만 가중시킨다. 결국 야근은 기본이고 전체 업무량만 기하급수적으로 늘어난다. </div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="3" data-option="D"
+                                data-stats="갑질지수:+14, 워라밸파괴:+14,합리성:-5,무능력:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="3" data-option="D"
+                                data-stats="갑질지수:-14, 워라밸파괴:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error" id="error-message-3">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
+
+                <div class="button-container">
+                    <button class="nav-btn prev-btn" id="prev-btn-3">이전</button>
+                    <button class="nav-btn next-btn" id="next-btn-3">다음</button>
+                </div>
+            </div>
+
+            <!-- 질문 4 -->
+            <div class="question-page" id="question-page-4">
+                <div class="question-number">질문 4/7</div>
+                <div class="question"><span class="emoji">📅</span>개인 사유로 연차를 신청했을 때, 혹은 하루 휴무를 요청했을 때, 상사는 어떤 반응을 보이나요?</div>
+                <div class="options">
+                    <div class="option" id="option-4-A">
+                        <div class="option-text">사유를 꼬치꼬치 캐묻고 거의 허락해주지 않는다. "나 때는..."을 운운하며 연차를 권리가 아닌 특혜로 여긴다.
+                        </div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="4" data-option="A"
+                                data-stats="워라밸파괴:+14, 꼰대력:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="4" data-option="A"
+                                data-stats="워라밸파괴:-14, 꼰대력:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-4-B">
+                        <div class="option-text">상위 상사에게 직접 보고하라고 떠넘긴다. 내가 없는 동안 생길 업무 상황에 대해 전혀 이해하지 못하고, 문제 발생 시 해결할 능력도 없다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="4" data-option="B"
+                                data-stats="책임회피:+14, 무능력:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="4" data-option="B"
+                                data-stats="책임회피:-14, 무능력:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-4-C">
+                        <div class="option-text">내 연차 날짜 앞뒤로 휴일이 있으면 절대 허락하지 않는다. 본인은 항상 가정사를 핑계로 먼저 쉬고, 내 연차 사유는 그 앞에서 무의미해진다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="4" data-option="C"
+                                data-stats="내로남불:+14, 갑질지수:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="4" data-option="C"
+                                data-stats="내로남불:-14, 갑질지수:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-4-D">
+                        <div class="option-text">간단히 사유를 물어보는 경우도 있지만, 그렇다 하더라도 깊게 물어보지 않고 연차를 허락해준다. 연차는 직장인의 당연한 권리라는 말에 동의할 사람이다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="4" data-option="D"
+                                data-stats="합리성:+14">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="4" data-option="D"
+                                data-stats="합리성:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error" id="error-message-4">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
+
+                <div class="button-container">
+                    <button class="nav-btn prev-btn" id="prev-btn-4">이전</button>
+                    <button class="nav-btn next-btn" id="next-btn-4">다음</button>
+                </div>
+            </div>
+
+            <!-- 질문 5 -->
+            <div class="question-page" id="question-page-5">
+                <div class="question-number">질문 5/7</div>
+                <div class="question"><span class="emoji">🔍</span>내 업무에 관하여 지적할 때, 그 상사는 어떤식으로 행동하나요?</div>
+                <div class="options">
+                    <div class="option" id="option-5-A">
+                        <div class="option-text">문제점을 정리한 후 나를 불러 하나씩 설명하고 해결책을 제시한다. 현재 문제를 해결하면서 내 업무능력 향상까지 신경쓴다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="5" data-option="A"
+                                data-stats="합리성:+14">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="5" data-option="A"
+                                data-stats="합리성:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-5-B">
+                        <div class="option-text">한 시간 넘게 설명해도 무슨 말인지 알 수 없을 정도로 애매모호하다. 업무시간만 지연되고 불필요한 프로세스만 추가되어 결국 야근으로 이어진다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="5" data-option="B"
+                                data-stats="워라밸파괴:+14, 꼰대력:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="5" data-option="B"
+                                data-stats="워라밸파괴:-14, 꼰대력:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-5-C">
+                        <div class="option-text">자신의 상사가 지적한 내용을 그대로 전달할 뿐이다. 업무를 제대로 파악하지 못해 피드백이 허술하고, 어떻게 수정해야 할지도 명확히 설명하지 못한다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="5" data-option="C"
+                                data-stats="책임회피:+14, 무능력:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="5" data-option="C"
+                                data-stats="책임회피:-14, 무능력:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-5-D">
+                        <div class="option-text">"이런 기본적인 일도 제대로 못해?"라며 폭언과 인격모독을 섞어가며 지적한다. 사전에 확인받은 업무인데도 자신은 그런 말을 한 적 없다고 뻔뻔하게 부인한다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="5" data-option="D"
+                                data-stats="내로남불:+14, 갑질지수:+14,합리성:-5,꼰대력:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="5" data-option="D"
+                                data-stats="내로남불:-14, 갑질지수:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error" id="error-message-5">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
+
+                <div class="button-container">
+                    <button class="nav-btn prev-btn" id="prev-btn-5">이전</button>
+                    <button class="nav-btn next-btn" id="next-btn-5">다음</button>
+                </div>
+            </div>
+
+            <!-- 질문 6 -->
+            <div class="question-page" id="question-page-6">
+                <div class="question-number">질문 6/7</div>
+                <div class="question"><span class="emoji">🍽️</span>오전을 견뎌내고 찾아온 점심시간, 그 상사는 어떻게 행동하나요?</div>
+                <div class="options">
+                    <div class="option" id="option-6-A">
+                        <div class="option-text">식사를 마치고 돌아와 자기만의 휴식시간을 갖는다. 다른 직원들이 일을 하던 쉬던 크게 신경쓰지 않는 모습이다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="6" data-option="A"
+                                data-stats="합리성:+14">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="6" data-option="A"
+                                data-stats="합리성:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-6-B">
+                        <div class="option-text">점심시간에 자료정리를 요구하고는 본인은 타 부서 사람들과 커피를 마시러 나간다. 내 점심시간은 무시한 채 일만 시킨다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="6" data-option="B"
+                                data-stats="꼰대력:+14, 내로남불:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="6" data-option="B"
+                                data-stats="꼰대력:-14, 내로남불:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-6-C">
+                        <div class="option-text">식사 중에도 끊임없이 업무 이야기를 하며 마감기한 압박만 늘어놓는다. 업무 방향에 대한 피드백은 없으면서 본인은 제일 먼저 쉬러 간다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="6" data-option="C"
+                                data-stats="책임회피:+14, 무능력:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="6" data-option="C"
+                                data-stats="책임회피:-14, 무능력:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-6-D">
+                        <div class="option-text"> 나는 혼자 여유롭게 먹고 싶은데 무조건 같이 식사하기를 강요한다. 팀워크를 핑계로 붙잡아 놓고 관심 없는 사적인 이야기나 업무지시를 늘어놓는다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="6" data-option="D"
+                                data-stats="워라밸파괴:+14, 갑질지수:+14,합리성:-5,꼰대력:+7">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="6" data-option="D"
+                                data-stats="워라밸파괴:-14, 갑질지수:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error" id="error-message-6">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
+
+                <div class="button-container">
+                    <button class="nav-btn prev-btn" id="prev-btn-6">이전</button>
+                    <button class="nav-btn next-btn" id="next-btn-6">다음</button>
+                </div>
+            </div>
+
+            <!-- 질문 7 -->
+            <div class="question-page" id="question-page-7">
+                <div class="question-number">질문 7/7</div>
+                <div class="question"><span class="emoji">💼</span>그 상사는 회의시간에 어떻게 행동하나요?</div>
+                <div class="options">
+                    <div class="option" id="option-7-A">
+                        <div class="option-text">회의안건을 정하지 않고 쓸데없는 말로 시간을 낭비한다. 본인은 30분 넘게 떠들면서 다른 사람 의견은 바로 끊어버린다. 또한 매번 회의시간이 너무 길어서 내 업무를 할 시간이 부족하다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="7" data-option="A"
+                                data-stats="꼰대력:+14, 내로남불:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="7" data-option="A"
+                                data-stats="꼰대력:-14, 내로남불:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-7-B">
+                        <div class="option-text">회의 주제를 미리 공유하고 모두의 의견을 경청한다. 담당자들의 의견을 존중하며 방향이 어긋날 때만 적절히 피드백을 준다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="7" data-option="B"
+                                data-stats="합리성:+14">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="7" data-option="B"
+                                data-stats="합리성:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-7-C">
+                        <div class="option-text">회의 방향을 잡지 못하고 정확한 문제 파악도 못한다. 업무 담당자들에게 책임만 떠넘기다 회의가 끝나면 해야 할 일만 산더미처럼 쌓여있다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="7" data-option="C"
+                                data-stats="무능력:+14, 책임회피:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="7" data-option="C"
+                                data-stats="무능력:-14, 책임회피:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                    <div class="option" id="option-7-D">
+                        <div class="option-text">회의를 최소 한 시간은 잡고 같은 말만 반복한다. 업무와 무관한 잔소리가 많고, 특정 사람들을 짜증 섞인 목소리로 몰아세워 자존감만 깎아내린다.</div>
+                        <div class="selection-group">
+                            <button class="selection-btn first" data-question="7" data-option="D"
+                                data-stats="꼰대력:+14, 갑질지수:+14,합리성:-5">가장 가깝다</button>
+                            <button class="selection-btn second" data-question="7" data-option="D"
+                                data-stats="꼰대력:-14, 갑질지수:-14">가장 멀다</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error" id="error-message-7">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
+
+                <div class="button-container">
+                    <button class="nav-btn prev-btn" id="prev-btn-7">이전</button>
+                    <button class="nav-btn submit-btn" id="submit-btn">결과 보기</button>
+                </div>
+            </div>
+
+            <!-- JavaScript 코드 수정 부분 -->
+            <script>
+                // 능력치 정의
+                const statTypes = {
+                    '꼰대력': { color: '#8e44ad', description: '과거 방식을 고집하고 변화를 거부하는 정도' },
+                    '내로남불': { color: '#e74c3c', description: '본인에게는 관대하고 타인에게는 엄격한 정도' },
+                    '갑질지수': { color: '#c0392b', description: '권위적 태도로 압박하고 공격하는 정도' },
+                    '책임회피': { color: '#f39c12', description: '실패와 문제를 타인에게 전가하는 정도' },
+                    '워라밸파괴': { color: '#d35400', description: '개인 시간을 존중하지 않고 침해하는 정도' },
+                    '무능력': { color: '#7f8c8d', description: '실무능력과 판단력이 부족한 정도' },
+                    '합리성': { color: '#2ecc71', description: '공정하고 합리적인 사고를 하는 정도' }
+                };
+
+                // 결과 저장 객체
+                const statsResults = {};
+                Object.keys(statTypes).forEach(stat => {
+                    statsResults[stat] = 0;
+                });
+
+                // 질문 페이지 관리
+                const totalPages = 7;
+                let currentPage = 0; // 0은 인트로 페이지, 1-7은 질문 페이지
+
+                // 각 질문별 선택 상태 저장
+                const selections = {};
+
+                // 페이지 인디케이터 생성
+                function createPageIndicators() {
+                    const container = document.getElementById('page-indicators');
+                    if (!container) return; // 컨테이너가 없으면 함수 종료
+
+                    // 기존 인디케이터 제거
+                    container.innerHTML = '';
+
+                    // 인트로 페이지 인디케이터
+                    const introIndicator = document.createElement('div');
+                    introIndicator.className = 'page-indicator active';
+                    introIndicator.dataset.page = 0;
+                    container.appendChild(introIndicator);
+
+                    // 질문 페이지 인디케이터
+                    for (let i = 1; i <= totalPages; i++) {
+                        const indicator = document.createElement('div');
+                        indicator.className = 'page-indicator';
+                        indicator.dataset.page = i;
+                        container.appendChild(indicator);
+
+                        // 클릭 이벤트 추가
+                        indicator.addEventListener('click', function () {
+                            navigateToPage(parseInt(this.dataset.page));
+                        });
+                    }
+                }
+
+                // 페이지 이동 함수를 수정하여 스크롤 기능 추가
+                function navigateToPage(pageNum) {
+                    // 현재 페이지가 유효한지 확인 (다음 버튼 클릭 시)
+                    if (pageNum > currentPage && currentPage > 0) {
+                        const isValid = validatePage(currentPage);
+                        if (!isValid) return;
+                    }
+
+                    // 이동할 페이지가 범위 내인지 확인
+                    if (pageNum < 0 || pageNum > totalPages) return;
+
+                    // 현재 페이지 숨기기
+                    if (currentPage === 0) {
+                        document.getElementById('intro-page').style.display = 'none';
+                    } else {
+                        document.getElementById(`question-page-${currentPage}`).classList.remove('active');
+                    }
+
+                    // 새 페이지 표시
+                    currentPage = pageNum;
+
+                    if (currentPage === 0) {
+                        document.getElementById('intro-page').style.display = 'block';
+                        document.getElementById('progress-container').style.display = 'none';
+                        document.getElementById('page-indicators').style.display = 'none';
+                    } else {
+                        document.getElementById(`question-page-${currentPage}`).classList.add('active');
+                        document.getElementById('progress-container').style.display = 'block';
+                        document.getElementById('page-indicators').style.display = 'flex';
+                        updateProgress();
+                    }
+
+                    // 페이지 인디케이터 업데이트
+                    updatePageIndicators();
+
+                    // 스크롤을 페이지 맨 위로 이동
+                    window.scrollTo(0, 0);
+                }
+
+                // 페이지 유효성 검사
+                function validatePage(pageNum) {
+                    if (!selections[pageNum] || !selections[pageNum].first || !selections[pageNum].second) {
+                        document.getElementById(`error-message-${pageNum}`).style.display = 'block';
+                        return false;
+                    }
+
+                    // 같은 옵션을 '첫 번째'와 '두 번째'로 동시에 선택할 수 없음
+                    if (selections[pageNum].first === selections[pageNum].second) {
+                        document.getElementById(`error-message-${pageNum}`).style.display = 'block';
+                        return false;
+                    }
+
+                    document.getElementById(`error-message-${pageNum}`).style.display = 'none';
+
+                    // 결과 저장
+                    savePageResult(pageNum, selections[pageNum].first, selections[pageNum].second);
+
+                    return true;
+                }
+                // 선택 처리 로직 수정
+                function handleSelectionBtnClick(event) {
+                    try {
+                        const button = event.target;
+
+                        // 예시 버튼인 경우 무시
+                        if (button.classList.contains('example-btn')) {
+                            return;
+                        }
+
+                        const questionNum = button.dataset.question;
+                        const option = button.dataset.option;
+
+                        // 필요한 데이터가 없으면 함수 종료
+                        if (!questionNum || !option) {
+                            console.warn('선택 버튼에 필요한 데이터 속성이 없습니다');
+                            return;
+                        }
+
+                        const isFirst = button.classList.contains('first');
+
+                        // 이미 선택된 버튼이면 선택 취소
+                        if (button.classList.contains('selected')) {
+                            button.classList.remove('selected');
+
+                            if (isFirst) {
+                                if (selections[questionNum]) {
+                                    selections[questionNum].first = null;
+                                }
+                            } else {
+                                if (selections[questionNum]) {
+                                    selections[questionNum].second = null;
+                                }
+                            }
+
+                            // 선택 취소시 옵션들 투명도 복원
+                            resetOptionOpacity(questionNum);
+                            return;
+                        }
+
+                        // 이미 다른 유형(first/second)으로 같은 옵션이 선택되어 있는지 확인
+                        if ((isFirst && selections[questionNum] && selections[questionNum].second === option) ||
+                            (!isFirst && selections[questionNum] && selections[questionNum].first === option)) {
+                            // 이미 다른 유형으로 선택된 옵션인 경우, 기존 선택 취소
+
+                            // 기존 버튼 찾기
+                            const existingButton = isFirst ?
+                                document.querySelector(`.selection-btn.second[data-question="${questionNum}"][data-option="${option}"].selected`) :
+                                document.querySelector(`.selection-btn.first[data-question="${questionNum}"][data-option="${option}"].selected`);
+
+                            // 기존 버튼 선택 취소
+                            if (existingButton) {
+                                existingButton.classList.remove('selected');
+                            }
+
+                            // 저장된 선택 상태 업데이트
+                            if (isFirst) {
+                                selections[questionNum].second = null;
+                            } else {
+                                selections[questionNum].first = null;
+                            }
+                        }
+
+                        // 같은 카테고리(first/second)의 이전 선택 취소
+                        document.querySelectorAll(`.selection-btn.${isFirst ? 'first' : 'second'}[data-question="${questionNum}"].selected`).forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+
+                        // 현재 버튼 선택
+                        button.classList.add('selected');
+
+                        // 선택 저장
+                        if (!selections[questionNum]) {
+                            selections[questionNum] = {};
+                        }
+
+                        if (isFirst) {
+                            selections[questionNum].first = option;
+                        } else {
+                            selections[questionNum].second = option;
+                        }
+
+                        // 선택된 옵션 외 다른 옵션들의 투명도 조절
+                        updateOptionOpacity(questionNum);
+
+                        // 오류 메시지 숨기기 - 요소가 존재하는지 확인
+                        const errorElement = document.getElementById(`error-message-${questionNum}`);
+                        if (errorElement) {
+                            errorElement.style.display = 'none';
+                        }
+                    } catch (error) {
+                        console.error('선택 버튼 처리 중 오류 발생:', error);
+                        // 오류가 발생해도 사용자 경험에 영향을 주지 않도록 조용히 처리
+                    }
+                }
+
+                function savePageResult(pageNum, first, second) {
+                    // 첫 번째 선택지의 능력치 점수 추가 (가장 가까운)
+                    const firstBtn = document.querySelector(`.selection-btn.first[data-question="${pageNum}"][data-option="${first}"]`);
+                    if (firstBtn) {
+                        const statsData = firstBtn.dataset.stats;
+                        if (statsData) {
+                            const statsList = statsData.split(',');
+                            statsList.forEach(statItem => {
+                                const [stat, value] = statItem.split(':');
+                                const numValue = parseFloat(value);
+                                if (!isNaN(numValue) && statsResults.hasOwnProperty(stat)) {
+                                    statsResults[stat] += numValue;
+                                }
+                            });
+                        }
+                    }
+
+                    // 두 번째 선택지의 능력치 점수 추가 (가장 먼 - 반대로 계산)
+                    const secondBtn = document.querySelector(`.selection-btn.second[data-question="${pageNum}"][data-option="${second}"]`);
+                    if (secondBtn) {
+                        const statsData = secondBtn.dataset.stats;
+                        if (statsData) {
+                            const statsList = statsData.split(',');
+                            statsList.forEach(statItem => {
+                                const [stat, value] = statItem.split(':');
+                                const numValue = parseFloat(value);
+                                if (!isNaN(numValue) && statsResults.hasOwnProperty(stat)) {
+                                    statsResults[stat] += numValue;
+                                }
+                            });
+                        }
+                    }
                 }
 
                 // 페이지 인디케이터 업데이트
-                updatePageIndicators();
-
-                // 스크롤을 페이지 맨 위로 이동
-                window.scrollTo(0, 0);
-            }
-
-            // 페이지 유효성 검사
-            function validatePage(pageNum) {
-                if (!selections[pageNum] || !selections[pageNum].first || !selections[pageNum].second) {
-                    document.getElementById(`error-message-${pageNum}`).style.display = 'block';
-                    return false;
+                function updatePageIndicators() {
+                    const indicators = document.querySelectorAll('.page-indicator');
+                    indicators.forEach(indicator => {
+                        if (parseInt(indicator.dataset.page) === currentPage) {
+                            indicator.classList.add('active');
+                        } else {
+                            indicator.classList.remove('active');
+                        }
+                    });
                 }
 
-                // 같은 옵션을 '첫 번째'와 '두 번째'로 동시에 선택할 수 없음
-                if (selections[pageNum].first === selections[pageNum].second) {
-                    document.getElementById(`error-message-${pageNum}`).style.display = 'block';
-                    return false;
+                // 진행률 업데이트
+                function updateProgress() {
+                    const completedQuestions = Object.keys(selections).filter(key =>
+                        selections[key] && selections[key].first && selections[key].second
+                    ).length;
+                    const progressPercentage = (completedQuestions / totalPages) * 100;
+                    document.getElementById('progress-bar').style.width = progressPercentage + '%';
                 }
 
-                document.getElementById(`error-message-${pageNum}`).style.display = 'none';
+                // 수정된 제출 함수
+                function submitResults() {
+                    // 마지막 페이지 유효성 검사
+                    if (!validatePage(totalPages)) return;
 
-                // 결과 저장
-                savePageResult(pageNum, selections[pageNum].first, selections[pageNum].second);
+                    // 모든 질문에 답변했는지 확인
+                    let allQuestionsAnswered = true;
+                    let firstUnansweredQuestion = null;
 
-                return true;
-            }
-            // 선택 처리 로직 수정
-            function handleSelectionBtnClick(event) {
-                try {
-                    const button = event.target;
+                    for (let i = 1; i <= totalPages; i++) {
+                        if (!selections[i] || !selections[i].first || !selections[i].second) {
+                            allQuestionsAnswered = false;
 
-                    // 예시 버튼인 경우 무시
-                    if (button.classList.contains('example-btn')) {
-                        return;
-                    }
-
-                    const questionNum = button.dataset.question;
-                    const option = button.dataset.option;
-
-                    // 필요한 데이터가 없으면 함수 종료
-                    if (!questionNum || !option) {
-                        console.warn('선택 버튼에 필요한 데이터 속성이 없습니다');
-                        return;
-                    }
-
-                    const isFirst = button.classList.contains('first');
-
-                    // 이미 선택된 버튼이면 선택 취소
-                    if (button.classList.contains('selected')) {
-                        button.classList.remove('selected');
-
-                        if (isFirst) {
-                            if (selections[questionNum]) {
-                                selections[questionNum].first = null;
-                            }
-                        } else {
-                            if (selections[questionNum]) {
-                                selections[questionNum].second = null;
+                            // 첫 번째 미답변 질문 번호 저장
+                            if (firstUnansweredQuestion === null) {
+                                firstUnansweredQuestion = i;
                             }
                         }
+                    }
 
-                        // 선택 취소시 옵션들 투명도 복원
-                        resetOptionOpacity(questionNum);
+                    if (!allQuestionsAnswered) {
+                        alert(`모든 질문에 답변해주세요!`);
+
+                        // 첫 번째 미답변 질문으로 이동
+                        if (firstUnansweredQuestion !== null) {
+                            navigateToPage(firstUnansweredQuestion);
+                        }
+
                         return;
                     }
 
-                    // 이미 다른 유형(first/second)으로 같은 옵션이 선택되어 있는지 확인
-                    if ((isFirst && selections[questionNum] && selections[questionNum].second === option) ||
-                        (!isFirst && selections[questionNum] && selections[questionNum].first === option)) {
-                        // 이미 다른 유형으로 선택된 옵션인 경우, 기존 선택 취소
+                    // 점수 정규화 및 유효 범위 설정
+                    const normalizedStats = {};
 
-                        // 기존 버튼 찾기
-                        const existingButton = isFirst ?
-                            document.querySelector(`.selection-btn.second[data-question="${questionNum}"][data-option="${option}"].selected`) :
-                            document.querySelector(`.selection-btn.first[data-question="${questionNum}"][data-option="${option}"].selected`);
+                    Object.keys(statsResults).forEach(stat => {
+                        let value = statsResults[stat];
 
-                        // 기존 버튼 선택 취소
-                        if (existingButton) {
-                            existingButton.classList.remove('selected');
-                        }
+                        // 최소값 0, 최대값 100으로 제한
+                        value = Math.max(0, Math.min(value, 100));
 
-                        // 저장된 선택 상태 업데이트
-                        if (isFirst) {
-                            selections[questionNum].second = null;
-                        } else {
-                            selections[questionNum].first = null;
-                        }
-                    }
-
-                    // 같은 카테고리(first/second)의 이전 선택 취소
-                    document.querySelectorAll(`.selection-btn.${isFirst ? 'first' : 'second'}[data-question="${questionNum}"].selected`).forEach(btn => {
-                        btn.classList.remove('selected');
+                        // 정수로 반올림
+                        normalizedStats[stat] = Math.round(value);
                     });
 
-                    // 현재 버튼 선택
-                    button.classList.add('selected');
+                    // 로그 추가: 최종 스탯 결과 상세 출력
+                    console.log("최종 스탯 결과 (상세):", normalizedStats);
+                    console.table(normalizedStats); // 테이블 형태로 보기 좋게 출력
 
-                    // 선택 저장
-                    if (!selections[questionNum]) {
-                        selections[questionNum] = {};
-                    }
-
-                    if (isFirst) {
-                        selections[questionNum].first = option;
-                    } else {
-                        selections[questionNum].second = option;
-                    }
-
-                    // 선택된 옵션 외 다른 옵션들의 투명도 조절
-                    updateOptionOpacity(questionNum);
-
-                    // 오류 메시지 숨기기 - 요소가 존재하는지 확인
-                    const errorElement = document.getElementById(`error-message-${questionNum}`);
-                    if (errorElement) {
-                        errorElement.style.display = 'none';
-                    }
-                } catch (error) {
-                    console.error('선택 버튼 처리 중 오류 발생:', error);
-                    // 오류가 발생해도 사용자 경험에 영향을 주지 않도록 조용히 처리
-                }
-            }
-
-            function savePageResult(pageNum, first, second) {
-                // 첫 번째 선택지의 능력치 점수 추가 (가장 가까운)
-                const firstBtn = document.querySelector(`.selection-btn.first[data-question="${pageNum}"][data-option="${first}"]`);
-                if (firstBtn) {
-                    const statsData = firstBtn.dataset.stats;
-                    if (statsData) {
-                        const statsList = statsData.split(',');
-                        statsList.forEach(statItem => {
-                            const [stat, value] = statItem.split(':');
-                            const numValue = parseFloat(value);
-                            if (!isNaN(numValue) && statsResults.hasOwnProperty(stat)) {
-                                statsResults[stat] += numValue;
-                            }
-                        });
-                    }
-                }
-
-                // 두 번째 선택지의 능력치 점수 추가 (가장 먼 - 반대로 계산)
-                const secondBtn = document.querySelector(`.selection-btn.second[data-question="${pageNum}"][data-option="${second}"]`);
-                if (secondBtn) {
-                    const statsData = secondBtn.dataset.stats;
-                    if (statsData) {
-                        const statsList = statsData.split(',');
-                        statsList.forEach(statItem => {
-                            const [stat, value] = statItem.split(':');
-                            const numValue = parseFloat(value);
-                            if (!isNaN(numValue) && statsResults.hasOwnProperty(stat)) {
-                                statsResults[stat] += numValue;
-                            }
-                        });
-                    }
-                }
-            }
-
-            // 페이지 인디케이터 업데이트
-            function updatePageIndicators() {
-                const indicators = document.querySelectorAll('.page-indicator');
-                indicators.forEach(indicator => {
-                    if (parseInt(indicator.dataset.page) === currentPage) {
-                        indicator.classList.add('active');
-                    } else {
-                        indicator.classList.remove('active');
-                    }
-                });
-            }
-
-            // 진행률 업데이트
-            function updateProgress() {
-                const completedQuestions = Object.keys(selections).filter(key =>
-                    selections[key] && selections[key].first && selections[key].second
-                ).length;
-                const progressPercentage = (completedQuestions / totalPages) * 100;
-                document.getElementById('progress-bar').style.width = progressPercentage + '%';
-            }
-
-            // 수정된 제출 함수
-            function submitResults() {
-                // 마지막 페이지 유효성 검사
-                if (!validatePage(totalPages)) return;
-
-                // 모든 질문에 답변했는지 확인
-                let allQuestionsAnswered = true;
-                let firstUnansweredQuestion = null;
-
-                for (let i = 1; i <= totalPages; i++) {
-                    if (!selections[i] || !selections[i].first || !selections[i].second) {
-                        allQuestionsAnswered = false;
-
-                        // 첫 번째 미답변 질문 번호 저장
-                        if (firstUnansweredQuestion === null) {
-                            firstUnansweredQuestion = i;
+                    // 각 스탯 값 검증
+                    Object.entries(normalizedStats).forEach(([stat, value]) => {
+                        console.log(`${stat}: ${value} (${typeof value})`);
+                        if (value === 0) {
+                            console.warn(`주의: ${stat} 값이 0입니다!`);
                         }
-                    }
-                }
-
-                if (!allQuestionsAnswered) {
-                    alert(`모든 질문에 답변해주세요!`);
-
-                    // 첫 번째 미답변 질문으로 이동
-                    if (firstUnansweredQuestion !== null) {
-                        navigateToPage(firstUnansweredQuestion);
-                    }
-
-                    return;
-                }
-
-                // 점수 정규화 및 유효 범위 설정
-                const normalizedStats = {};
-
-                Object.keys(statsResults).forEach(stat => {
-                    let value = statsResults[stat];
-
-                    // 최소값 0, 최대값 100으로 제한
-                    value = Math.max(0, Math.min(value, 100));
-
-                    // 정수로 반올림
-                    normalizedStats[stat] = Math.round(value);
-                });
-
-                // 로그 추가: 최종 스탯 결과 상세 출력
-                console.log("최종 스탯 결과 (상세):", normalizedStats);
-                console.table(normalizedStats); // 테이블 형태로 보기 좋게 출력
-
-                // 각 스탯 값 검증
-                Object.entries(normalizedStats).forEach(([stat, value]) => {
-                    console.log(`${stat}: ${value} (${typeof value})`);
-                    if (value === 0) {
-                        console.warn(`주의: ${stat} 값이 0입니다!`);
-                    }
-                });
-
-                // 고유한 시드 생성 (현재 시간 + 스탯 합계)
-                const seed = Date.now() + Object.values(normalizedStats).reduce((sum, val) => sum + val, 0);
-                console.log("생성된 시드값:", seed);
-
-                // 스탯 이름의 순서를 고정 (고정된 순서로 값만 전달)
-                const statOrder = [
-                    '꼰대력', '내로남불', '갑질지수', '책임회피',
-                    '워라밸파괴', '무능력', '합리성'
-                ];
-
-                // 순서대로 값만 추출하여 쉼표로 구분된 문자열로 만듦
-                const statsValues = statOrder.map(stat => normalizedStats[stat] || 0).join(',');
-                console.log("URL로 전달될 stats 파라미터:", statsValues);
-
-                // 최종 URL 미리보기
-                const resultUrl = `result_v5.html?seed=${seed}&stats=${statsValues}`;
-                console.log("최종 결과 URL:", resultUrl);
-
-                // URL 파라미터로 시드와 스탯 값 배열만 전달
-                window.location.href = resultUrl;
-            }
-
-            // 선택 버튼 클릭 이벤트 처리 함수
-            function handleSelectionBtnClick(event) {
-                try {
-                    const button = event.target;
-
-                    // 예시 버튼인 경우 무시
-                    if (button.classList.contains('example-btn')) {
-                        return;
-                    }
-
-                    const questionNum = button.dataset.question;
-                    const option = button.dataset.option;
-
-                    // 필요한 데이터가 없으면 함수 종료
-                    if (!questionNum || !option) {
-                        console.warn('선택 버튼에 필요한 데이터 속성이 없습니다');
-                        return;
-                    }
-
-                    const isFirst = button.classList.contains('first');
-
-                    // 이미 선택된 버튼이면 선택 취소
-                    if (button.classList.contains('selected')) {
-                        button.classList.remove('selected');
-
-                        if (isFirst) {
-                            if (selections[questionNum]) {
-                                selections[questionNum].first = null;
-                            }
-                        } else {
-                            if (selections[questionNum]) {
-                                selections[questionNum].second = null;
-                            }
-                        }
-
-                        // 선택 취소시 옵션들 투명도 복원
-                        resetOptionOpacity(questionNum);
-                        return;
-                    }
-
-                    // 이미 다른 유형(first/second)으로 같은 옵션이 선택되어 있는지 확인
-                    if ((isFirst && selections[questionNum] && selections[questionNum].second === option) ||
-                        (!isFirst && selections[questionNum] && selections[questionNum].first === option)) {
-                        // 이미 다른 유형으로 선택된 옵션인 경우, 기존 선택 취소
-
-                        // 기존 버튼 찾기
-                        const existingButton = isFirst ?
-                            document.querySelector(`.selection-btn.second[data-question="${questionNum}"][data-option="${option}"].selected`) :
-                            document.querySelector(`.selection-btn.first[data-question="${questionNum}"][data-option="${option}"].selected`);
-
-                        // 기존 버튼 선택 취소
-                        if (existingButton) {
-                            existingButton.classList.remove('selected');
-                        }
-
-                        // 저장된 선택 상태 업데이트
-                        if (isFirst) {
-                            selections[questionNum].second = null;
-                        } else {
-                            selections[questionNum].first = null;
-                        }
-                    }
-
-                    // 같은 카테고리(first/second)의 이전 선택 취소
-                    document.querySelectorAll(`.selection-btn.${isFirst ? 'first' : 'second'}[data-question="${questionNum}"].selected`).forEach(btn => {
-                        btn.classList.remove('selected');
                     });
 
-                    // 현재 버튼 선택
-                    button.classList.add('selected');
+                    // 고유한 시드 생성 (현재 시간 + 스탯 합계)
+                    const seed = Date.now() + Object.values(normalizedStats).reduce((sum, val) => sum + val, 0);
+                    console.log("생성된 시드값:", seed);
 
-                    // 선택 저장
-                    if (!selections[questionNum]) {
-                        selections[questionNum] = {};
-                    }
+                    // 스탯 이름의 순서를 고정 (고정된 순서로 값만 전달)
+                    const statOrder = [
+                        '꼰대력', '내로남불', '갑질지수', '책임회피',
+                        '워라밸파괴', '무능력', '합리성'
+                    ];
 
-                    if (isFirst) {
-                        selections[questionNum].first = option;
-                    } else {
-                        selections[questionNum].second = option;
-                    }
+                    // 순서대로 값만 추출하여 쉼표로 구분된 문자열로 만듦
+                    const statsValues = statOrder.map(stat => normalizedStats[stat] || 0).join(',');
+                    console.log("URL로 전달될 stats 파라미터:", statsValues);
 
-                    // 선택된 옵션 외 다른 옵션들의 투명도 조절
-                    updateOptionOpacity(questionNum);
+                    // 최종 URL 미리보기
+                    const resultUrl = `result.html?seed=${seed}&stats=${statsValues}`;
+                    console.log("최종 결과 URL:", resultUrl);
 
-                    // 오류 메시지 숨기기 - 요소가 존재하는지 확인
-                    const errorElement = document.getElementById(`error-message-${questionNum}`);
-                    if (errorElement) {
-                        errorElement.style.display = 'none';
-                    }
-                } catch (error) {
-                    console.error('선택 버튼 처리 중 오류 발생:', error);
-                    // 오류가 발생해도 사용자 경험에 영향을 주지 않도록 조용히 처리
+                    // URL 파라미터로 시드와 스탯 값 배열만 전달
+                    window.location.href = resultUrl;
                 }
-            }
 
-            function updateOptionOpacity(questionNum) {
-                // 현재 선택 상태 확인
-                const current = selections[questionNum] || {};
-                const hasFirst = current.first !== undefined && current.first !== null;
-                const hasSecond = current.second !== undefined && current.second !== null;
+                // 선택 버튼 클릭 이벤트 처리 함수
+                function handleSelectionBtnClick(event) {
+                    try {
+                        const button = event.target;
 
-                // 모든 옵션에 대해 처리
-                document.querySelectorAll(`#question-page-${questionNum} .option`).forEach(option => {
-                    const optionId = option.id;
-                    const optionLetter = optionId.split('-')[2]; // 예: option-1-A에서 A 추출
+                        // 예시 버튼인 경우 무시
+                        if (button.classList.contains('example-btn')) {
+                            return;
+                        }
 
-                    // 클래스명 수정
-                    if (hasFirst && current.first === optionLetter) {
-                        option.classList.add('selected-first');
-                        option.classList.remove('selected-second');
-                    } else if (hasSecond && current.second === optionLetter) {
-                        option.classList.add('selected-second');
-                        option.classList.remove('selected-first');
-                    } else {
-                        option.classList.remove('selected-first');
-                        option.classList.remove('selected-second');
+                        const questionNum = button.dataset.question;
+                        const option = button.dataset.option;
+
+                        // 필요한 데이터가 없으면 함수 종료
+                        if (!questionNum || !option) {
+                            console.warn('선택 버튼에 필요한 데이터 속성이 없습니다');
+                            return;
+                        }
+
+                        const isFirst = button.classList.contains('first');
+
+                        // 이미 선택된 버튼이면 선택 취소
+                        if (button.classList.contains('selected')) {
+                            button.classList.remove('selected');
+
+                            if (isFirst) {
+                                if (selections[questionNum]) {
+                                    selections[questionNum].first = null;
+                                }
+                            } else {
+                                if (selections[questionNum]) {
+                                    selections[questionNum].second = null;
+                                }
+                            }
+
+                            // 선택 취소시 옵션들 투명도 복원
+                            resetOptionOpacity(questionNum);
+                            return;
+                        }
+
+                        // 이미 다른 유형(first/second)으로 같은 옵션이 선택되어 있는지 확인
+                        if ((isFirst && selections[questionNum] && selections[questionNum].second === option) ||
+                            (!isFirst && selections[questionNum] && selections[questionNum].first === option)) {
+                            // 이미 다른 유형으로 선택된 옵션인 경우, 기존 선택 취소
+
+                            // 기존 버튼 찾기
+                            const existingButton = isFirst ?
+                                document.querySelector(`.selection-btn.second[data-question="${questionNum}"][data-option="${option}"].selected`) :
+                                document.querySelector(`.selection-btn.first[data-question="${questionNum}"][data-option="${option}"].selected`);
+
+                            // 기존 버튼 선택 취소
+                            if (existingButton) {
+                                existingButton.classList.remove('selected');
+                            }
+
+                            // 저장된 선택 상태 업데이트
+                            if (isFirst) {
+                                selections[questionNum].second = null;
+                            } else {
+                                selections[questionNum].first = null;
+                            }
+                        }
+
+                        // 같은 카테고리(first/second)의 이전 선택 취소
+                        document.querySelectorAll(`.selection-btn.${isFirst ? 'first' : 'second'}[data-question="${questionNum}"].selected`).forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+
+                        // 현재 버튼 선택
+                        button.classList.add('selected');
+
+                        // 선택 저장
+                        if (!selections[questionNum]) {
+                            selections[questionNum] = {};
+                        }
+
+                        if (isFirst) {
+                            selections[questionNum].first = option;
+                        } else {
+                            selections[questionNum].second = option;
+                        }
+
+                        // 선택된 옵션 외 다른 옵션들의 투명도 조절
+                        updateOptionOpacity(questionNum);
+
+                        // 오류 메시지 숨기기 - 요소가 존재하는지 확인
+                        const errorElement = document.getElementById(`error-message-${questionNum}`);
+                        if (errorElement) {
+                            errorElement.style.display = 'none';
+                        }
+                    } catch (error) {
+                        console.error('선택 버튼 처리 중 오류 발생:', error);
+                        // 오류가 발생해도 사용자 경험에 영향을 주지 않도록 조용히 처리
                     }
+                }
 
-                    // 둘 다 선택된 경우 다른 옵션 흐리게
-                    if (hasFirst && hasSecond) {
-                        if (optionLetter !== current.first && optionLetter !== current.second) {
-                            option.classList.add('dimmed');
+                function updateOptionOpacity(questionNum) {
+                    // 현재 선택 상태 확인
+                    const current = selections[questionNum] || {};
+                    const hasFirst = current.first !== undefined && current.first !== null;
+                    const hasSecond = current.second !== undefined && current.second !== null;
+
+                    // 모든 옵션에 대해 처리
+                    document.querySelectorAll(`#question-page-${questionNum} .option`).forEach(option => {
+                        const optionId = option.id;
+                        const optionLetter = optionId.split('-')[2]; // 예: option-1-A에서 A 추출
+
+                        // 클래스명 수정
+                        if (hasFirst && current.first === optionLetter) {
+                            option.classList.add('selected-first');
+                            option.classList.remove('selected-second');
+                        } else if (hasSecond && current.second === optionLetter) {
+                            option.classList.add('selected-second');
+                            option.classList.remove('selected-first');
+                        } else {
+                            option.classList.remove('selected-first');
+                            option.classList.remove('selected-second');
+                        }
+
+                        // 둘 다 선택된 경우 다른 옵션 흐리게
+                        if (hasFirst && hasSecond) {
+                            if (optionLetter !== current.first && optionLetter !== current.second) {
+                                option.classList.add('dimmed');
+                            } else {
+                                option.classList.remove('dimmed');
+                            }
                         } else {
                             option.classList.remove('dimmed');
                         }
-                    } else {
-                        option.classList.remove('dimmed');
-                    }
-                });
-            }
-
-            // 옵션 투명도 초기화 함수
-            function resetOptionOpacity(questionNum) {
-                document.querySelectorAll(`#question-page-${questionNum} .option`).forEach(option => {
-                    option.classList.remove('dimmed');
-                    option.classList.remove('selected-first');
-                    option.classList.remove('selected-second');
-                });
-            }
-
-            // 선택 상태 복원
-            function restoreSelections() {
-                Object.keys(selections).forEach(questionNum => {
-                    const selection = selections[questionNum];
-
-                    if (selection.first) {
-                        const firstBtn = document.querySelector(`.selection-btn.first[data-question="${questionNum}"][data-option="${selection.first}"]`);
-                        if (firstBtn) firstBtn.classList.add('selected');
-                    }
-
-                    if (selection.second) {
-                        const secondBtn = document.querySelector(`.selection-btn.second[data-question="${questionNum}"][data-option="${selection.second}"]`);
-                        if (secondBtn) secondBtn.classList.add('selected');
-                    }
-
-                    // 투명도 업데이트
-                    updateOptionOpacity(questionNum);
-                });
-            }
-
-            // 모든 스탯에 기본 점수 30점 부여
-            function initializeStatsWithBaseScore() {
-                Object.keys(statTypes).forEach(stat => {
-                    statsResults[stat] = 0; // 모든 스탯의 기본값을 30으로 설정
-                });
-                console.log("스탯 초기화 완료:", statsResults);
-            }
-
-            // 이벤트 리스너 설정
-            function setupEventListeners() {
-                // 시작 버튼
-                document.getElementById('start-btn').addEventListener('click', function () {
-                    navigateToPage(1);
-                });
-
-                // 이전/다음 버튼 및 결과 확인 버튼
-                for (let i = 1; i <= totalPages; i++) {
-                    // 다음 버튼
-                    if (i < totalPages) {
-                        document.getElementById(`next-btn-${i}`).addEventListener('click', function () {
-                            navigateToPage(i + 1);
-                        });
-                    }
-
-                    // 이전 버튼
-                    if (i > 1) {
-                        document.getElementById(`prev-btn-${i}`).addEventListener('click', function () {
-                            navigateToPage(i - 1);
-                        });
-                    }
+                    });
                 }
 
-                // 결과 확인 버튼
-                document.getElementById('submit-btn').addEventListener('click', submitResults);
+                // 옵션 투명도 초기화 함수
+                function resetOptionOpacity(questionNum) {
+                    document.querySelectorAll(`#question-page-${questionNum} .option`).forEach(option => {
+                        option.classList.remove('dimmed');
+                        option.classList.remove('selected-first');
+                        option.classList.remove('selected-second');
+                    });
+                }
 
-                // 모든 선택 버튼에 이벤트 리스너 추가
-                document.querySelectorAll('.selection-btn').forEach(button => {
-                    button.addEventListener('click', handleSelectionBtnClick);
+                // 선택 상태 복원
+                function restoreSelections() {
+                    Object.keys(selections).forEach(questionNum => {
+                        const selection = selections[questionNum];
+
+                        if (selection.first) {
+                            const firstBtn = document.querySelector(`.selection-btn.first[data-question="${questionNum}"][data-option="${selection.first}"]`);
+                            if (firstBtn) firstBtn.classList.add('selected');
+                        }
+
+                        if (selection.second) {
+                            const secondBtn = document.querySelector(`.selection-btn.second[data-question="${questionNum}"][data-option="${selection.second}"]`);
+                            if (secondBtn) secondBtn.classList.add('selected');
+                        }
+
+                        // 투명도 업데이트
+                        updateOptionOpacity(questionNum);
+                    });
+                }
+
+                // 모든 스탯에 기본 점수 30점 부여
+                function initializeStatsWithBaseScore() {
+                    Object.keys(statTypes).forEach(stat => {
+                        statsResults[stat] = 0; // 모든 스탯의 기본값을 30으로 설정
+                    });
+                    console.log("스탯 초기화 완료:", statsResults);
+                }
+
+                // 이벤트 리스너 설정
+                function setupEventListeners() {
+                    // 시작 버튼
+                    document.getElementById('start-btn').addEventListener('click', function () {
+                        navigateToPage(1);
+                    });
+
+                    // 이전/다음 버튼 및 결과 확인 버튼
+                    for (let i = 1; i <= totalPages; i++) {
+                        // 다음 버튼
+                        if (i < totalPages) {
+                            document.getElementById(`next-btn-${i}`).addEventListener('click', function () {
+                                navigateToPage(i + 1);
+                            });
+                        }
+
+                        // 이전 버튼
+                        if (i > 1) {
+                            document.getElementById(`prev-btn-${i}`).addEventListener('click', function () {
+                                navigateToPage(i - 1);
+                            });
+                        }
+                    }
+
+                    // 결과 확인 버튼
+                    document.getElementById('submit-btn').addEventListener('click', submitResults);
+
+                    // 모든 선택 버튼에 이벤트 리스너 추가
+                    document.querySelectorAll('.selection-btn').forEach(button => {
+                        button.addEventListener('click', handleSelectionBtnClick);
+                    });
+                }
+
+                // 페이지 로드 시 실행 함수에 초기화 코드 추가
+                window.addEventListener('load', function () {
+                    createPageIndicators();
+                    setupEventListeners();
+
+                    // 모든 스탯에 기본 점수 부여
+                    initializeStatsWithBaseScore();
+
+                    // 인트로 페이지부터 시작
+                    navigateToPage(0);
                 });
-            }
+            </script>
+    </body>
 
-            // 페이지 로드 시 실행 함수에 초기화 코드 추가
-            window.addEventListener('load', function () {
-                createPageIndicators();
-                setupEventListeners();
-
-                // 모든 스탯에 기본 점수 부여
-                initializeStatsWithBaseScore();
-
-                // 인트로 페이지부터 시작
-                navigateToPage(0);
-            });
-        </script>
-</body>
-
-</html>
+    </html>
