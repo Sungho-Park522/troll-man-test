@@ -3898,14 +3898,14 @@
             // 초기 메시지 설정
             loadingMessage.textContent = loadingStages[0].message;
 
-            // 진행 상태 및 메시지 업데이트 함수
+            // 진행 상태 및 메시지 업데이트 함수 수정
             const loadingInterval = setInterval(function () {
                 // 현재 단계 결정
                 const startProgress = currentStage === 0 ? 0 : loadingStages[currentStage - 1].endProgress;
                 const endProgress = loadingStages[currentStage].endProgress;
 
-                // 이미지가 로드되지 않았고 89% 미만일 때
-                if (!imageLoaded && currentProgress < maxProgressBeforeImageLoad) {
+                // 89% 미만일 때 (이미지 로딩 완료 여부와 관계없이)
+                if (currentProgress < maxProgressBeforeImageLoad) {
                     // 현재 단계의 진행률 증가
                     currentProgress += stageIncrements[currentStage];
 
