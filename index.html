@@ -252,6 +252,62 @@
         .option.dimmed {
             opacity: 0.6;
         }
+
+        /* 광고 컨테이너 스타일 */
+        .ad-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 20px auto;
+            /* 상하 여백과 좌우 중앙 정렬 */
+            overflow: hidden;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            /* 반응형을 위한 최대 너비 제한 */
+            width: fit-content;
+            /* 내용에 맞게 너비 조정 */
+        }
+
+        .ad-header {
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            text-align: right;
+        }
+
+        .ad-header span {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .ad-content {
+            padding: 15px;
+            text-align: center;
+            /* 광고 내용 중앙 정렬 */
+            display: flex;
+            justify-content: center;
+            /* 수평 중앙 정렬 */
+            align-items: center;
+            /* 수직 중앙 정렬 */
+        }
+
+        /* 반응형 광고 스타일 */
+        @media (max-width: 768px) {
+            .ad-container {
+                width: 100%;
+                /* 모바일에서 전체 너비 사용 */
+            }
+
+            /* 모바일에서 더 적은 패딩 사용 */
+            .ad-content {
+                padding: 10px;
+            }
+        }
+
+        /* 페이드인 애니메이션을 위한 스타일 (result.html에 사용) */
+        .ad-container.fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
     </style>
 </head>
 
@@ -345,11 +401,16 @@
             </div>
 
             <!-- 여기에 광고 추가 -->
-            <ins class="kakao_ad_area" style="display:none;"
-data-ad-unit = "DAN-FDKorvUxzNoqyGsc"
-data-ad-width = "320"
-data-ad-height = "50"></ins>
-<script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+            <div class="ad-container">
+                <div class="ad-header">
+                    <span>추천</span>
+                </div>
+                <div class="ad-content">
+                    <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-FDKorvUxzNoqyGsc"
+                        data-ad-width="320" data-ad-height="50"></ins>
+                    <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+                </div>
+            </div>
 
             <div class="button-container">
                 <div></div>
@@ -664,6 +725,17 @@ data-ad-height = "50"></ins>
                 <button class="nav-btn prev-btn" id="prev-btn-3">이전</button>
                 <button class="nav-btn next-btn" id="next-btn-3">다음</button>
             </div>
+            <!-- 광고 추가 -->
+            <div class="ad-container" style="margin-top: 15px;">
+                <div class="ad-header">
+                    <span>추천</span>
+                </div>
+                <div class="ad-content">
+                    <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-U7dfBPfLi1DEW02x"
+                        data-ad-width="320" data-ad-height="100"></ins>
+                    <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+                </div>
+            </div>
         </div>
 
         <!-- 질문 4 -->
@@ -876,6 +948,18 @@ data-ad-height = "50"></ins>
             </div>
 
             <div class="error" id="error-message-7">두 개 다 선택해주세요! 상사와 '가장 가까운' 행동과 '가장 먼' 행동 하나씩!</div>
+
+            <!-- 광고 추가 -->
+            <div class="ad-container" style="margin: 15px 0;">
+                <div class="ad-header">
+                    <span>추천</span>
+                </div>
+                <div class="ad-content">
+                    <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-Pg6H6oOHvAaRyghT"
+                        data-ad-width="300" data-ad-height="250"></ins>
+                    <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+                </div>
+            </div>
 
             <div class="button-container">
                 <button class="nav-btn prev-btn" id="prev-btn-7">이전</button>
