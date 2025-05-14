@@ -110,10 +110,15 @@
         .ad-container {
             border: 1px solid #ddd;
             border-radius: 8px;
-            margin: 20px 0;
+            margin: 20px auto;
+            /* 상하 여백과 좌우 중앙 정렬 */
             overflow: hidden;
             background-color: #f9f9f9;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            /* 반응형을 위한 최대 너비 제한 */
+            width: fit-content;
+            /* 내용에 맞게 너비 조정 */
         }
 
         .ad-header {
@@ -130,33 +135,31 @@
         .ad-content {
             padding: 15px;
             text-align: center;
+            /* 광고 내용 중앙 정렬 */
+            display: flex;
+            justify-content: center;
+            /* 수평 중앙 정렬 */
+            align-items: center;
+            /* 수직 중앙 정렬 */
         }
 
-        .ad-content h3 {
-            margin-top: 0;
-            color: #333;
-            font-size: 18px;
+        /* 반응형 광고 스타일 */
+        @media (max-width: 768px) {
+            .ad-container {
+                width: 100%;
+                /* 모바일에서 전체 너비 사용 */
+            }
+
+            /* 모바일에서 더 적은 패딩 사용 */
+            .ad-content {
+                padding: 10px;
+            }
         }
 
-        .ad-content p {
-            color: #555;
-            margin: 5px 0;
-        }
-
-        .ad-button {
-            display: inline-block;
-            background-color: #4a6bdf;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin-top: 10px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        .ad-button:hover {
-            background-color: #3a54b4;
+        /* 페이드인 애니메이션을 위한 스타일 (result.html에 사용) */
+        .ad-container.fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
         }
 
         /* 결과 보기 버튼 */
@@ -1055,6 +1058,18 @@
             <div class="boss-title" id="boss-title">당신의 상사는...</div>
         </div>
 
+        <!-- 광고 추가 -->
+        <div class="ad-container fade-in delay-1" style="margin: 15px 0 20px 0;">
+            <div class="ad-header">
+                <span>추천</span>
+            </div>
+            <div class="ad-content">
+                <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-5X6Wj7BhBXXCbkKJ" data-ad-width="320"
+                    data-ad-height="100"></ins>
+                <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+            </div>
+        </div>
+
         <!-- 스탯 차트와 상사 이미지 (가로 배치) -->
         <div class="results-main-content">
             <div class="stats-container fade-in delay-1">
@@ -1075,6 +1090,18 @@
                     <div class="speech-bubble bubble-bottom-left fade-in delay-6" id="bubble-3"></div>
                     <div class="speech-bubble bubble-bottom-right fade-in delay-4" id="bubble-4"></div>
                 </div>
+            </div>
+        </div>
+
+        <!-- 보고서 컨테이너 위에 광고 추가 -->
+        <div class="ad-container fade-in delay-2" style="margin-bottom: 20px;">
+            <div class="ad-header">
+                <span>추천</span>
+            </div>
+            <div class="ad-content">
+                <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-nhDCAb32onY3vjki" data-ad-width="300"
+                    data-ad-height="250"></ins>
+                <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
             </div>
         </div>
 
@@ -1106,6 +1133,18 @@
             <p class="difficulty-description" id="difficulty-description">난이도 분석 중...</p>
         </div>
 
+        <!-- 광고 추가 -->
+        <div class="ad-container fade-in delay-3" style="margin: 20px 0;">
+            <div class="ad-header">
+                <span>추천</span>
+            </div>
+            <div class="ad-content">
+                <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-Aaxy7z3wHXgQ6uCw" data-ad-width="320"
+                    data-ad-height="100"></ins>
+                <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+            </div>
+        </div>
+
         <!-- 수정된 HTML 코드 -->
         <div class="psychology-section fade-in delay-4">
             <div class="section-title">그 놈은 왜 그럴까?</div>
@@ -1121,6 +1160,18 @@
             <div class="mode-toggle">
                 <button class="mode-button active" id="fun-mode">기본모드</button>
                 <button class="mode-button" id="spicy-mode">심층분석</button>
+            </div>
+        </div>
+
+        <!-- 광고 추가 -->
+        <div class="ad-container fade-in delay-5" style="margin: 20px 0;">
+            <div class="ad-header">
+                <span>추천</span>
+            </div>
+            <div class="ad-content">
+                <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-EWlz4jrVc7PZG46u" data-ad-width="300"
+                    data-ad-height="250"></ins>
+                <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
             </div>
         </div>
         <!-- <div class="psychological-prescription fade-in delay-4">
@@ -1156,6 +1207,18 @@
 
         <div class="back-to-test fade-in delay-6">
             <button class="back-button" id="back-btn">테스트 다시 하기</button>
+        </div>
+
+        <!-- 추가 광고 -->
+        <div class="ad-container fade-in delay-6" style="margin-top: 20px;">
+            <div class="ad-header">
+                <span>추천</span>
+            </div>
+            <div class="ad-content">
+                <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-2X72RkRl3ka675OA" data-ad-width="728"
+                    data-ad-height="90"></ins>
+                <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+            </div>
         </div>
     </div>
 
