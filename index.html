@@ -951,18 +951,6 @@
                     </div>
                 </div>
 
-                <!-- 광고 추가 -->
-                <div class="ad-container" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
-                    <div class="ad-header">
-                        <span>추천</span>
-                    </div>
-                    <div class="ad-content">
-                        <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-Pg6H6oOHvAaRyghT"
-                            data-ad-width="300" data-ad-height="250"></ins>
-                        <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
-                    </div>
-                </div>
-
                 <div class="option" id="option-7-C">
                     <div class="option-text">회의 방향을 잡지 못하고 정확한 문제 파악도 못한다. 업무 담당자들에게 책임만 떠넘기다 회의가 끝나면 해야 할 일만 산더미처럼
                         쌓여있다.</div>
@@ -1621,93 +1609,147 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                // 일반 광고 컨테이너들
-                const standardAdContainers = Array.from(document.querySelectorAll('.ad-container:not(.fixed-ad-container)'));
+                // 광고 컨테이너들을 선택
+                const adContainers = document.querySelectorAll('.ad-container');
 
-                // 고정 광고 컨테이너들
-                const fixedAdContainer1_4 = document.getElementById('fixed-ad-container-1-4');
-                const fixedAdContainer5_7 = document.getElementById('fixed-ad-container-5-7');
+                // 현재 활성화된 광고 수를 추적
+                let activeAds = 0;
+                const MAX_ACTIVE_ADS = 2; // 동시에 활성화될 수 있는 최대 광고 수
 
-                // 광고 컨테이너들의 원본 내용 저장
-                const adContents = {};
+                // 각 광고의 원본 HTML을 저장할 객체
+                const originalAdContent = {};
 
-                // 일반 광고 컨테이너 내용 저장
-                standardAdContainers.forEach((container, index) => {
+                // 언로드 타이머를 저장할 객체
+                const unloadTimers = {};
+
+                // 초기 광고 컨텐츠 저장
+                adContainers.forEach((container, index) => {
                     const adContentEl = container.querySelector('.ad-content');
                     if (adContentEl) {
-                        adContents[`standard-${index}`] = adContentEl.innerHTML;
+                        originalAdContent[index] = adContentEl.innerHTML;
                         container.dataset.loaded = 'false';
                     }
                 });
 
-                // 고정 광고 컨테이너 내용 저장
-                if (fixedAdContainer1_4) {
-                    const adContentEl = fixedAdContainer1_4.querySelector('.ad-content');
-                    if (adContentEl) {
-                        adContents['fixed-1-4'] = adContentEl.innerHTML;
-                        fixedAdContainer1_4.dataset.loaded = 'false';
-                    }
-                }
+                // 로드를 위한 Intersection Observer 옵션 - 10% 이상 보일 때
+                const loadOptions = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.1 // 10% 이상 보일 때 로드
+                };
 
-                if (fixedAdContainer5_7) {
-                    const adContentEl = fixedAdContainer5_7.querySelector('.ad-content');
-                    if (adContentEl) {
-                        adContents['fixed-5-7'] = adContentEl.innerHTML;
-                        fixedAdContainer5_7.dataset.loaded = 'false';
-                    }
-                }
+                // 언로드를 위한 Intersection Observer 옵션 - 완전히 보이지 않을 때
+                const unloadOptions = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0 // 완전히 보이지 않을 때 언로드
+                };
 
-                // 일반 광고를 위한 Intersection Observer
-                const adObserver = new IntersectionObserver((entries, observer) => {
+                // 로드를 위한 Observer
+                const loadObserver = new IntersectionObserver((entries, observer) => {
                     entries.forEach(entry => {
+                        const adContainer = entry.target;
+                        const containerIndex = Array.from(adContainers).indexOf(adContainer);
+
+                        // 광고가 화면에 보이는 경우
                         if (entry.isIntersecting) {
-                            const container = entry.target;
-                            if (container.dataset.loaded !== 'true') {
-                                loadAd(container);
+                            // 이미 로드되었는지 확인
+                            if (adContainer.dataset.loaded !== 'true' && activeAds < MAX_ACTIVE_ADS) {
+                                // 언로드 타이머가 있다면 취소
+                                if (unloadTimers[containerIndex]) {
+                                    clearTimeout(unloadTimers[containerIndex]);
+                                    delete unloadTimers[containerIndex];
+                                }
+
+                                loadAd(adContainer, containerIndex);
+                                activeAds++;
+                                console.log(`광고 로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
                             }
                         }
                     });
-                }, { threshold: 0.1 });
+                }, loadOptions);
 
-                // 일반 광고 컨테이너 관찰 시작
-                standardAdContainers.forEach(container => {
-                    adObserver.observe(container);
+                // 언로드를 위한 Observer
+                const unloadObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        const adContainer = entry.target;
+                        const containerIndex = Array.from(adContainers).indexOf(adContainer);
+
+                        // 광고가 화면에서 완전히 사라진 경우
+                        if (!entry.isIntersecting && adContainer.dataset.loaded === 'true') {
+                            // 일정 시간(500ms) 후에 언로드 - 스크롤 중에 빠르게 나갔다 들어오는 경우 방지
+                            unloadTimers[containerIndex] = setTimeout(() => {
+                                if (adContainer.dataset.loaded === 'true') {
+                                    unloadAd(adContainer, containerIndex);
+                                    activeAds = Math.max(0, activeAds - 1);
+                                    console.log(`광고 언로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
+                                }
+                                delete unloadTimers[containerIndex];
+                            }, 500); // 500ms 지연 적용
+                        }
+                    });
+                }, unloadOptions);
+
+                // 각 광고 컨테이너 관찰 시작
+                adContainers.forEach(container => {
+                    loadObserver.observe(container);
+                    unloadObserver.observe(container);
                 });
 
-                // 고정 광고를 위한 Intersection Observer
-                const fixedAdObserver = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const container = entry.target;
-                            if (container.dataset.loaded !== 'true') {
-                                loadAd(container);
-                            }
-                        }
-                    });
-                }, { threshold: 0.1 });
-
-                // 고정 광고 컨테이너 관찰 시작
-                if (fixedAdContainer1_4) fixedAdObserver.observe(fixedAdContainer1_4);
-                if (fixedAdContainer5_7) fixedAdObserver.observe(fixedAdContainer5_7);
-
                 // 광고 로드 함수
-                function loadAd(container) {
+                function loadAd(container, index) {
+                    // 이미 로드된 광고는 무시
                     if (container.dataset.loaded === 'true') return;
 
+                    // 광고 컨텐츠 요소 찾기
                     const adContent = container.querySelector('.ad-content');
                     if (!adContent) return;
 
-                    // 카카오 애드핏 스크립트 로드
-                    const script = document.createElement('script');
-                    script.src = '//t1.daumcdn.net/kas/static/ba.min.js';
-                    script.async = true;
-                    adContent.appendChild(script);
+                    // 원본 HTML 복원
+                    if (originalAdContent[index]) {
+                        adContent.innerHTML = originalAdContent[index];
 
-                    // 로드 상태 표시
-                    container.dataset.loaded = 'true';
+                        // 카카오 애드핏 스크립트 로드
+                        const script = document.createElement('script');
+                        script.src = '//t1.daumcdn.net/kas/static/ba.min.js';
+                        script.async = true;
+                        adContent.appendChild(script);
 
-                    console.log(`광고 '${container.id}' 로드됨`);
+                        // 로드 상태 표시
+                        container.dataset.loaded = 'true';
+                        container.dataset.visibility = 'visible';
+
+                        console.log(`광고 ${index} 로드됨`);
+                    }
                 }
+
+                // 광고 언로드 함수
+                function unloadAd(container, index) {
+                    // 로드되지 않은 광고는 무시
+                    if (container.dataset.loaded !== 'true') return;
+
+                    // 광고 컨텐츠 요소 찾기
+                    const adContent = container.querySelector('.ad-content');
+                    if (!adContent) return;
+
+                    // 광고 내용 비우기 (원본 HTML은 저장되어 있음)
+                    adContent.innerHTML = '';
+
+                    // 로드 상태 초기화
+                    container.dataset.loaded = 'false';
+                    container.dataset.visibility = 'hidden';
+
+                    console.log(`광고 ${index} 언로드됨`);
+                }
+
+                // 페이지 나갈 때 모든 타이머 정리
+                window.addEventListener('beforeunload', () => {
+                    Object.keys(unloadTimers).forEach(key => {
+                        if (unloadTimers[key]) {
+                            clearTimeout(unloadTimers[key]);
+                        }
+                    });
+                });
             });
         </script>
 </body>
