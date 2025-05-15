@@ -1525,7 +1525,6 @@
         </script>
 
         <script>
-            // 동적 광고 로드를 위한 Intersection Observer 활용
             document.addEventListener('DOMContentLoaded', function () {
                 // 광고 컨테이너들을 선택
                 const adContainers = document.querySelectorAll('.ad-container');
@@ -1533,6 +1532,19 @@
                 // 현재 활성화된 광고 수를 추적
                 let activeAds = 0;
                 const MAX_ACTIVE_ADS = 2; // 동시에 활성화될 수 있는 최대 광고 수
+
+                // 각 광고의 원본 HTML을 저장할 객체
+                const originalAdContent = {};
+
+                // 초기 광고 컨텐츠 저장
+                adContainers.forEach((container, index) => {
+                    const adContentEl = container.querySelector('.ad-content');
+                    if (adContentEl) {
+                        originalAdContent[index] = adContentEl.innerHTML;
+                        // 초기 상태는 로드되지 않음으로 설정
+                        container.dataset.loaded = 'false';
+                    }
+                });
 
                 // Intersection Observer 옵션
                 const options = {
@@ -1545,19 +1557,22 @@
                 const handleIntersect = (entries, observer) => {
                     entries.forEach(entry => {
                         const adContainer = entry.target;
+                        const containerIndex = Array.from(adContainers).indexOf(adContainer);
 
                         // 광고가 화면에 보이는 경우
-                        if (entry.isIntersecting && !adContainer.dataset.loaded) {
-                            // 활성 광고 수가 최대치 미만인 경우만 로드
-                            if (activeAds < MAX_ACTIVE_ADS) {
-                                loadAd(adContainer);
+                        if (entry.isIntersecting) {
+                            // 이미 로드되었는지 확인
+                            if (adContainer.dataset.loaded !== 'true' && activeAds < MAX_ACTIVE_ADS) {
+                                loadAd(adContainer, containerIndex);
                                 activeAds++;
+                                console.log(`광고 로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
                             }
                         }
                         // 광고가 화면에서 사라진 경우
                         else if (!entry.isIntersecting && adContainer.dataset.loaded === 'true') {
-                            unloadAd(adContainer);
-                            activeAds--;
+                            unloadAd(adContainer, containerIndex);
+                            activeAds = Math.max(0, activeAds - 1); // 음수 방지
+                            console.log(`광고 언로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
                         }
                     });
                 };
@@ -1571,53 +1586,47 @@
                 });
 
                 // 광고 로드 함수
-                function loadAd(container) {
+                function loadAd(container, index) {
                     // 이미 로드된 광고는 무시
                     if (container.dataset.loaded === 'true') return;
 
-                    // 광고 ID와 크기 가져오기
-                    const adUnit = container.querySelector('.kakao_ad_area').dataset.adUnit;
-                    const adWidth = container.querySelector('.kakao_ad_area').dataset.adWidth;
-                    const adHeight = container.querySelector('.kakao_ad_area').dataset.adHeight;
-
-                    // 기존 광고 요소 제거 후 다시 생성
+                    // 광고 컨텐츠 요소 찾기
                     const adContent = container.querySelector('.ad-content');
-                    adContent.innerHTML = '';
+                    if (!adContent) return;
 
-                    // 새 광고 요소 생성
-                    const ins = document.createElement('ins');
-                    ins.className = 'kakao_ad_area';
-                    ins.style.display = 'none';
-                    ins.dataset.adUnit = adUnit;
-                    ins.dataset.adWidth = adWidth;
-                    ins.dataset.adHeight = adHeight;
-                    adContent.appendChild(ins);
+                    // 원본 HTML 복원
+                    if (originalAdContent[index]) {
+                        adContent.innerHTML = originalAdContent[index];
 
-                    // 광고 스크립트 로드
-                    const script = document.createElement('script');
-                    script.src = '//t1.daumcdn.net/kas/static/ba.min.js';
-                    script.async = true;
-                    adContent.appendChild(script);
+                        // 카카오 애드핏 스크립트 로드
+                        const script = document.createElement('script');
+                        script.src = '//t1.daumcdn.net/kas/static/ba.min.js';
+                        script.async = true;
+                        adContent.appendChild(script);
 
-                    // 로드 상태 표시
-                    container.dataset.loaded = 'true';
+                        // 로드 상태 표시
+                        container.dataset.loaded = 'true';
 
-                    console.log(`광고 로드: ${adUnit}`);
+                        console.log(`광고 ${index} 로드됨`);
+                    }
                 }
 
                 // 광고 언로드 함수
-                function unloadAd(container) {
+                function unloadAd(container, index) {
                     // 로드되지 않은 광고는 무시
                     if (container.dataset.loaded !== 'true') return;
 
-                    // 광고 내용 제거
+                    // 광고 컨텐츠 요소 찾기
                     const adContent = container.querySelector('.ad-content');
+                    if (!adContent) return;
+
+                    // 광고 내용 비우기 (원본 HTML은 저장되어 있음)
                     adContent.innerHTML = '';
 
                     // 로드 상태 초기화
                     container.dataset.loaded = 'false';
 
-                    console.log('광고 언로드');
+                    console.log(`광고 ${index} 언로드됨`);
                 }
             });
         </script>
