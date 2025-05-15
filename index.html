@@ -560,13 +560,28 @@
         </div>
 
         <!-- 광고 추가 -->
-        <div class="fixed-ad-container" id="fixed-ad-container"
+        <!-- 질문 1-4용 고정 광고 -->
+        <div class="fixed-ad-container" id="fixed-ad-container-1-4"
             style="display: none; margin: 20px auto 30px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
             <div class="ad-content" style="display: flex; justify-content: center;">
                 <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-4qKnZ3teSn6Tl0xu" data-ad-width="320"
+                    data-ad-height="100"></ins>
+                <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+            </div>
+        </div>
+
+        <!-- 질문 5-7용 고정 광고 -->
+        <div class="fixed-ad-container" id="fixed-ad-container-5-7"
+            style="display: none; margin: 20px auto 30px auto; width: 100%; max-width: 320px; text-align: center;">
+            <div class="ad-header">
+                <span>추천</span>
+            </div>
+            <div class="ad-content" style="display: flex; justify-content: center;">
+                <!-- 다른 광고 코드 (다른 data-ad-unit 값 사용) -->
+                <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-Pg6H6oOHvAaRyghT" data-ad-width="320"
                     data-ad-height="100"></ins>
                 <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
             </div>
@@ -1054,15 +1069,36 @@
                 currentPage = pageNum;
 
                 if (currentPage === 0) {
+                    // 인트로 페이지
                     document.getElementById('intro-page').style.display = 'block';
                     document.getElementById('progress-container').style.display = 'none';
                     document.getElementById('page-indicators').style.display = 'none';
-                    document.getElementById('fixed-ad-container').style.display = 'none'; // 인트로 페이지에서는 고정 광고 숨기기
+
+                    // 두 고정 광고 모두 숨기기
+                    document.getElementById('fixed-ad-container-1-4').style.display = 'none';
+                    document.getElementById('fixed-ad-container-5-7').style.display = 'none';
                 } else {
                     document.getElementById(`question-page-${currentPage}`).classList.add('active');
                     document.getElementById('progress-container').style.display = 'block';
                     document.getElementById('page-indicators').style.display = 'flex';
-                    document.getElementById('fixed-ad-container').style.display = 'block'; // 질문 페이지에서는 고정 광고 표시
+
+                    // 페이지 번호에 따라 다른 광고 표시
+                    if (currentPage >= 1 && currentPage <= 4) {
+                        // 질문 1-4일 때는 첫 번째 광고만 표시
+                        document.getElementById('fixed-ad-container-1-4').style.display = 'block';
+                        document.getElementById('fixed-ad-container-5-7').style.display = 'none';
+
+                        // 아직 로드되지 않았으면 로드
+                        loadAdIfVisible('fixed-ad-container-1-4');
+                    } else if (currentPage >= 5 && currentPage <= 7) {
+                        // 질문 5-7일 때는 두 번째 광고만 표시
+                        document.getElementById('fixed-ad-container-1-4').style.display = 'none';
+                        document.getElementById('fixed-ad-container-5-7').style.display = 'block';
+
+                        // 아직 로드되지 않았으면 로드
+                        loadAdIfVisible('fixed-ad-container-5-7');
+                    }
+
                     updateProgress();
                 }
 
@@ -1071,7 +1107,6 @@
 
                 // 스크롤을 진행도 표시 부분으로 이동
                 if (currentPage > 0) {
-                    // 진행도 컨테이너 위치 가져오기
                     const progressContainer = document.getElementById('progress-container');
                     if (progressContainer) {
                         const scrollPosition = progressContainer.offsetTop - 20;
@@ -1085,6 +1120,32 @@
                         top: 0,
                         behavior: 'smooth'
                     });
+                }
+            }
+
+            // 광고가 보이는 상태일 때 로드하는 함수
+            function loadAdIfVisible(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                // 컨테이너가 표시되어 있고 아직 로드되지 않은 경우에만 로드
+                if (container.style.display !== 'none' && container.dataset.loaded !== 'true') {
+                    const adContent = container.querySelector('.ad-content');
+                    if (!adContent) return;
+
+                    // 기존 콘텐츠 보존
+                    const originalContent = adContent.innerHTML;
+
+                    // 카카오 애드핏 스크립트 로드
+                    const script = document.createElement('script');
+                    script.src = '//t1.daumcdn.net/kas/static/ba.min.js';
+                    script.async = true;
+                    adContent.appendChild(script);
+
+                    // 로드 상태 표시
+                    container.dataset.loaded = 'true';
+
+                    console.log(`광고 '${containerId}' 로드됨`);
                 }
             }
 
@@ -1560,159 +1621,92 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                // 광고 컨테이너들을 선택 (fixed-ad-container는 별도로 처리)
-                const standardAdContainers = Array.from(document.querySelectorAll('.ad-container:not(#fixed-ad-container)'));
-                const fixedAdContainer = document.getElementById('fixed-ad-container');
+                // 일반 광고 컨테이너들
+                const standardAdContainers = Array.from(document.querySelectorAll('.ad-container:not(.fixed-ad-container)'));
 
-                // 현재 활성화된 광고 수를 추적 (고정 광고 제외)
-                let activeAds = 0;
-                const MAX_ACTIVE_ADS = 2; // 동시에 활성화될 수 있는 최대 광고 수 (고정 광고 제외)
+                // 고정 광고 컨테이너들
+                const fixedAdContainer1_4 = document.getElementById('fixed-ad-container-1-4');
+                const fixedAdContainer5_7 = document.getElementById('fixed-ad-container-5-7');
 
-                // 각 광고의 원본 HTML을 저장할 객체
-                const originalAdContent = {};
+                // 광고 컨테이너들의 원본 내용 저장
+                const adContents = {};
 
-                // 초기 광고 컨텐츠 저장 (일반 광고)
+                // 일반 광고 컨테이너 내용 저장
                 standardAdContainers.forEach((container, index) => {
                     const adContentEl = container.querySelector('.ad-content');
                     if (adContentEl) {
-                        originalAdContent[index] = adContentEl.innerHTML;
+                        adContents[`standard-${index}`] = adContentEl.innerHTML;
                         container.dataset.loaded = 'false';
                     }
                 });
 
-                // 고정 광고 컨텐츠 저장 (있는 경우)
-                if (fixedAdContainer) {
-                    const fixedAdContentEl = fixedAdContainer.querySelector('.ad-content');
-                    if (fixedAdContentEl) {
-                        originalAdContent['fixed'] = fixedAdContentEl.innerHTML;
-                        fixedAdContainer.dataset.loaded = 'false';
+                // 고정 광고 컨테이너 내용 저장
+                if (fixedAdContainer1_4) {
+                    const adContentEl = fixedAdContainer1_4.querySelector('.ad-content');
+                    if (adContentEl) {
+                        adContents['fixed-1-4'] = adContentEl.innerHTML;
+                        fixedAdContainer1_4.dataset.loaded = 'false';
                     }
                 }
 
-                // Intersection Observer 옵션
-                const options = {
-                    root: null,
-                    rootMargin: '0px',
-                    threshold: 0.1
-                };
+                if (fixedAdContainer5_7) {
+                    const adContentEl = fixedAdContainer5_7.querySelector('.ad-content');
+                    if (adContentEl) {
+                        adContents['fixed-5-7'] = adContentEl.innerHTML;
+                        fixedAdContainer5_7.dataset.loaded = 'false';
+                    }
+                }
 
-                // Observer 콜백 함수 - 일반 광고용
-                const handleIntersect = (entries, observer) => {
+                // 일반 광고를 위한 Intersection Observer
+                const adObserver = new IntersectionObserver((entries, observer) => {
                     entries.forEach(entry => {
-                        const adContainer = entry.target;
-                        const containerIndex = standardAdContainers.indexOf(adContainer);
-
-                        // 광고가 화면에 보이는 경우
                         if (entry.isIntersecting) {
-                            // 이미 로드되었는지 확인
-                            if (adContainer.dataset.loaded !== 'true' && activeAds < MAX_ACTIVE_ADS) {
-                                loadAd(adContainer, containerIndex);
-                                activeAds++;
-                                console.log(`광고 로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
+                            const container = entry.target;
+                            if (container.dataset.loaded !== 'true') {
+                                loadAd(container);
                             }
                         }
-                        // 광고가 화면에서 사라진 경우
-                        else if (!entry.isIntersecting && adContainer.dataset.loaded === 'true') {
-                            unloadAd(adContainer, containerIndex);
-                            activeAds = Math.max(0, activeAds - 1);
-                            console.log(`광고 언로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
-                        }
                     });
-                };
-
-                // Observer 생성
-                const observer = new IntersectionObserver(handleIntersect, options);
+                }, { threshold: 0.1 });
 
                 // 일반 광고 컨테이너 관찰 시작
                 standardAdContainers.forEach(container => {
-                    observer.observe(container);
+                    adObserver.observe(container);
                 });
 
-                // 고정 광고를 위한 별도 Observer 콜백
-                const handleFixedAdIntersect = (entries, observer) => {
+                // 고정 광고를 위한 Intersection Observer
+                const fixedAdObserver = new IntersectionObserver((entries, observer) => {
                     entries.forEach(entry => {
-                        const adContainer = entry.target;
-
-                        // 광고가 화면에 보이는 경우 (활성 광고 수 제한 없이 항상 로드)
-                        if (entry.isIntersecting && adContainer.dataset.loaded !== 'true') {
-                            loadAd(adContainer, 'fixed');
-                            console.log(`고정 광고 로드됨`);
+                        if (entry.isIntersecting) {
+                            const container = entry.target;
+                            if (container.dataset.loaded !== 'true') {
+                                loadAd(container);
+                            }
                         }
-                        // 고정 광고는 화면에서 사라져도 유지 (언로드하지 않음)
                     });
-                };
+                }, { threshold: 0.1 });
 
-                // 고정 광고를 위한 별도 Observer 생성
-                const fixedAdObserver = new IntersectionObserver(handleFixedAdIntersect, options);
-
-                // 고정 광고 컨테이너 관찰 시작 (있는 경우)
-                if (fixedAdContainer) {
-                    fixedAdObserver.observe(fixedAdContainer);
-                }
-
-                // 질문 페이지로 이동할 때 고정 광고 표시 및 로드
-                const originalNavigateToPage = window.navigateToPage;
-                window.navigateToPage = function (pageNum) {
-                    originalNavigateToPage(pageNum);
-
-                    // 질문 페이지로 이동할 때 고정 광고 표시
-                    if (pageNum > 0 && fixedAdContainer) {
-                        fixedAdContainer.style.display = 'block';
-
-                        // 아직 로드되지 않았으면 강제로 로드
-                        if (fixedAdContainer.dataset.loaded !== 'true') {
-                            loadAd(fixedAdContainer, 'fixed');
-                        }
-                    } else if (fixedAdContainer) {
-                        fixedAdContainer.style.display = 'none';
-                    }
-                };
+                // 고정 광고 컨테이너 관찰 시작
+                if (fixedAdContainer1_4) fixedAdObserver.observe(fixedAdContainer1_4);
+                if (fixedAdContainer5_7) fixedAdObserver.observe(fixedAdContainer5_7);
 
                 // 광고 로드 함수
-                function loadAd(container, index) {
-                    // 이미 로드된 광고는 무시
+                function loadAd(container) {
                     if (container.dataset.loaded === 'true') return;
 
-                    // 광고 컨텐츠 요소 찾기
                     const adContent = container.querySelector('.ad-content');
                     if (!adContent) return;
 
-                    // 원본 HTML 복원
-                    if (originalAdContent[index]) {
-                        adContent.innerHTML = originalAdContent[index];
+                    // 카카오 애드핏 스크립트 로드
+                    const script = document.createElement('script');
+                    script.src = '//t1.daumcdn.net/kas/static/ba.min.js';
+                    script.async = true;
+                    adContent.appendChild(script);
 
-                        // 카카오 애드핏 스크립트 로드
-                        const script = document.createElement('script');
-                        script.src = '//t1.daumcdn.net/kas/static/ba.min.js';
-                        script.async = true;
-                        adContent.appendChild(script);
+                    // 로드 상태 표시
+                    container.dataset.loaded = 'true';
 
-                        // 로드 상태 표시
-                        container.dataset.loaded = 'true';
-
-                        console.log(`광고 ${index} 로드됨`);
-                    }
-                }
-
-                // 광고 언로드 함수
-                function unloadAd(container, index) {
-                    // 로드되지 않은 광고는 무시
-                    if (container.dataset.loaded !== 'true') return;
-
-                    // 고정 광고는 언로드하지 않음
-                    if (index === 'fixed') return;
-
-                    // 광고 컨텐츠 요소 찾기
-                    const adContent = container.querySelector('.ad-content');
-                    if (!adContent) return;
-
-                    // 광고 내용 비우기 (원본 HTML은 저장되어 있음)
-                    adContent.innerHTML = '';
-
-                    // 로드 상태 초기화
-                    container.dataset.loaded = 'false';
-
-                    console.log(`광고 ${index} 언로드됨`);
+                    console.log(`광고 '${container.id}' 로드됨`);
                 }
             });
         </script>
