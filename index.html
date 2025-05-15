@@ -1547,6 +1547,12 @@
                 // 모든 스탯에 기본 점수 부여
                 initializeStatsWithBaseScore();
 
+                // 고정 광고 초기화 - 시작 시 숨김 상태로 설정
+                const fixedAdContainer = document.getElementById('fixed-ad-container');
+                if (fixedAdContainer) {
+                    fixedAdContainer.style.display = 'none';
+                }
+
                 // 인트로 페이지부터 시작
                 navigateToPage(0);
             });
