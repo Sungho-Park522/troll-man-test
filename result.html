@@ -4558,25 +4558,34 @@
             // 각 광고의 원본 HTML을 저장할 객체
             const originalAdContent = {};
 
+            // 언로드 타이머를 저장할 객체
+            const unloadTimers = {};
+
             // 초기 광고 컨텐츠 저장
             adContainers.forEach((container, index) => {
                 const adContentEl = container.querySelector('.ad-content');
                 if (adContentEl) {
                     originalAdContent[index] = adContentEl.innerHTML;
-                    // 초기 상태는 로드되지 않음으로 설정
                     container.dataset.loaded = 'false';
                 }
             });
 
-            // Intersection Observer 옵션
-            const options = {
-                root: null, // viewport 기준
+            // 로드를 위한 Intersection Observer 옵션 - 10% 이상 보일 때
+            const loadOptions = {
+                root: null,
                 rootMargin: '0px',
-                threshold: 0.1 // 10% 이상 보일 때 활성화
+                threshold: 0.1 // 10% 이상 보일 때 로드
             };
 
-            // Observer 콜백 함수
-            const handleIntersect = (entries, observer) => {
+            // 언로드를 위한 Intersection Observer 옵션 - 완전히 보이지 않을 때
+            const unloadOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0 // 완전히 보이지 않을 때 언로드
+            };
+
+            // 로드를 위한 Observer
+            const loadObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     const adContainer = entry.target;
                     const containerIndex = Array.from(adContainers).indexOf(adContainer);
@@ -4585,26 +4594,45 @@
                     if (entry.isIntersecting) {
                         // 이미 로드되었는지 확인
                         if (adContainer.dataset.loaded !== 'true' && activeAds < MAX_ACTIVE_ADS) {
+                            // 언로드 타이머가 있다면 취소
+                            if (unloadTimers[containerIndex]) {
+                                clearTimeout(unloadTimers[containerIndex]);
+                                delete unloadTimers[containerIndex];
+                            }
+
                             loadAd(adContainer, containerIndex);
                             activeAds++;
                             console.log(`광고 로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
                         }
                     }
-                    // 광고가 화면에서 사라진 경우
-                    else if (!entry.isIntersecting && adContainer.dataset.loaded === 'true') {
-                        unloadAd(adContainer, containerIndex);
-                        activeAds = Math.max(0, activeAds - 1); // 음수 방지
-                        console.log(`광고 언로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
+                });
+            }, loadOptions);
+
+            // 언로드를 위한 Observer
+            const unloadObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    const adContainer = entry.target;
+                    const containerIndex = Array.from(adContainers).indexOf(adContainer);
+
+                    // 광고가 화면에서 완전히 사라진 경우
+                    if (!entry.isIntersecting && adContainer.dataset.loaded === 'true') {
+                        // 일정 시간(500ms) 후에 언로드 - 스크롤 중에 빠르게 나갔다 들어오는 경우 방지
+                        unloadTimers[containerIndex] = setTimeout(() => {
+                            if (adContainer.dataset.loaded === 'true') {
+                                unloadAd(adContainer, containerIndex);
+                                activeAds = Math.max(0, activeAds - 1);
+                                console.log(`광고 언로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
+                            }
+                            delete unloadTimers[containerIndex];
+                        }, 500); // 500ms 지연 적용
                     }
                 });
-            };
-
-            // Observer 생성
-            const observer = new IntersectionObserver(handleIntersect, options);
+            }, unloadOptions);
 
             // 각 광고 컨테이너 관찰 시작
             adContainers.forEach(container => {
-                observer.observe(container);
+                loadObserver.observe(container);
+                unloadObserver.observe(container);
             });
 
             // 광고 로드 함수
@@ -4628,6 +4656,7 @@
 
                     // 로드 상태 표시
                     container.dataset.loaded = 'true';
+                    container.dataset.visibility = 'visible';
 
                     console.log(`광고 ${index} 로드됨`);
                 }
@@ -4647,9 +4676,19 @@
 
                 // 로드 상태 초기화
                 container.dataset.loaded = 'false';
+                container.dataset.visibility = 'hidden';
 
                 console.log(`광고 ${index} 언로드됨`);
             }
+
+            // 페이지 나갈 때 모든 타이머 정리
+            window.addEventListener('beforeunload', () => {
+                Object.keys(unloadTimers).forEach(key => {
+                    if (unloadTimers[key]) {
+                        clearTimeout(unloadTimers[key]);
+                    }
+                });
+            });
         });
     </script>
 </body>
