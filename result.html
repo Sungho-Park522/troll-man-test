@@ -1032,7 +1032,7 @@
             </div>
 
             <!-- 광고 컨테이너 -->
-            <div class="ad-container">
+            <div class="ad-container" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
                 <div class="ad-header">
                     <span>추천</span>
                 </div>
@@ -1059,7 +1059,7 @@
         </div>
 
         <!-- 광고 추가 -->
-        <div class="ad-container fade-in delay-1" style="margin: 15px 0 20px 0;">
+        <div class="ad-container fade-in delay-1" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
@@ -1094,7 +1094,7 @@
         </div>
 
         <!-- 보고서 컨테이너 위에 광고 추가 -->
-        <div class="ad-container fade-in delay-2" style="margin-bottom: 20px;">
+        <div class="ad-container fade-in delay-2" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
@@ -1134,7 +1134,7 @@
         </div>
 
         <!-- 광고 추가 -->
-        <div class="ad-container fade-in delay-3" style="margin: 20px 0;">
+        <div class="ad-container fade-in delay-3" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
@@ -1164,7 +1164,7 @@
         </div>
 
         <!-- 광고 추가 -->
-        <div class="ad-container fade-in delay-5" style="margin: 20px 0;">
+        <div class="ad-container fade-in delay-5" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
@@ -1210,7 +1210,7 @@
         </div>
 
         <!-- 추가 광고 -->
-        <div class="ad-container fade-in delay-6" style="margin-top: 20px;">
+        <div class="ad-container fade-in delay-6" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
@@ -4157,22 +4157,6 @@
         //         }
         //     });
         // });
-    </script>
-    <script>
-        // 페이지 로드 완료 후 실행
-        document.addEventListener('DOMContentLoaded', function () {
-            // 카카오 SDK 동적 로드
-            const kakaoScript = document.createElement('script');
-            kakaoScript.src = 'https://developers.kakao.com/sdk/js/kakao.js';
-            kakaoScript.onload = function () {
-                console.log("카카오 SDK 로드 완료:", typeof Kakao);
-                if (typeof Kakao !== 'undefined') {
-                    Kakao.init('여기에_발급받은_JavaScript_키를_넣으세요');
-                    console.log("카카오 SDK 초기화 상태:", Kakao.isInitialized());
-                }
-            };
-            document.head.appendChild(kakaoScript);
-        });
     </script>
 
     <script>
