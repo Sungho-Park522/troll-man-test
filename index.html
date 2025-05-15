@@ -1560,38 +1560,47 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                // 광고 컨테이너들을 선택
-                const adContainers = document.querySelectorAll('.ad-container');
+                // 광고 컨테이너들을 선택 (fixed-ad-container는 별도로 처리)
+                const standardAdContainers = Array.from(document.querySelectorAll('.ad-container:not(#fixed-ad-container)'));
+                const fixedAdContainer = document.getElementById('fixed-ad-container');
 
-                // 현재 활성화된 광고 수를 추적
+                // 현재 활성화된 광고 수를 추적 (고정 광고 제외)
                 let activeAds = 0;
-                const MAX_ACTIVE_ADS = 2; // 동시에 활성화될 수 있는 최대 광고 수
+                const MAX_ACTIVE_ADS = 2; // 동시에 활성화될 수 있는 최대 광고 수 (고정 광고 제외)
 
                 // 각 광고의 원본 HTML을 저장할 객체
                 const originalAdContent = {};
 
-                // 초기 광고 컨텐츠 저장
-                adContainers.forEach((container, index) => {
+                // 초기 광고 컨텐츠 저장 (일반 광고)
+                standardAdContainers.forEach((container, index) => {
                     const adContentEl = container.querySelector('.ad-content');
                     if (adContentEl) {
                         originalAdContent[index] = adContentEl.innerHTML;
-                        // 초기 상태는 로드되지 않음으로 설정
                         container.dataset.loaded = 'false';
                     }
                 });
 
+                // 고정 광고 컨텐츠 저장 (있는 경우)
+                if (fixedAdContainer) {
+                    const fixedAdContentEl = fixedAdContainer.querySelector('.ad-content');
+                    if (fixedAdContentEl) {
+                        originalAdContent['fixed'] = fixedAdContentEl.innerHTML;
+                        fixedAdContainer.dataset.loaded = 'false';
+                    }
+                }
+
                 // Intersection Observer 옵션
                 const options = {
-                    root: null, // viewport 기준
+                    root: null,
                     rootMargin: '0px',
-                    threshold: 0.1 // 10% 이상 보일 때 활성화
+                    threshold: 0.1
                 };
 
-                // Observer 콜백 함수
+                // Observer 콜백 함수 - 일반 광고용
                 const handleIntersect = (entries, observer) => {
                     entries.forEach(entry => {
                         const adContainer = entry.target;
-                        const containerIndex = Array.from(adContainers).indexOf(adContainer);
+                        const containerIndex = standardAdContainers.indexOf(adContainer);
 
                         // 광고가 화면에 보이는 경우
                         if (entry.isIntersecting) {
@@ -1605,7 +1614,7 @@
                         // 광고가 화면에서 사라진 경우
                         else if (!entry.isIntersecting && adContainer.dataset.loaded === 'true') {
                             unloadAd(adContainer, containerIndex);
-                            activeAds = Math.max(0, activeAds - 1); // 음수 방지
+                            activeAds = Math.max(0, activeAds - 1);
                             console.log(`광고 언로드 (${containerIndex}): 활성 광고 수: ${activeAds}`);
                         }
                     });
@@ -1614,10 +1623,50 @@
                 // Observer 생성
                 const observer = new IntersectionObserver(handleIntersect, options);
 
-                // 각 광고 컨테이너 관찰 시작
-                adContainers.forEach(container => {
+                // 일반 광고 컨테이너 관찰 시작
+                standardAdContainers.forEach(container => {
                     observer.observe(container);
                 });
+
+                // 고정 광고를 위한 별도 Observer 콜백
+                const handleFixedAdIntersect = (entries, observer) => {
+                    entries.forEach(entry => {
+                        const adContainer = entry.target;
+
+                        // 광고가 화면에 보이는 경우 (활성 광고 수 제한 없이 항상 로드)
+                        if (entry.isIntersecting && adContainer.dataset.loaded !== 'true') {
+                            loadAd(adContainer, 'fixed');
+                            console.log(`고정 광고 로드됨`);
+                        }
+                        // 고정 광고는 화면에서 사라져도 유지 (언로드하지 않음)
+                    });
+                };
+
+                // 고정 광고를 위한 별도 Observer 생성
+                const fixedAdObserver = new IntersectionObserver(handleFixedAdIntersect, options);
+
+                // 고정 광고 컨테이너 관찰 시작 (있는 경우)
+                if (fixedAdContainer) {
+                    fixedAdObserver.observe(fixedAdContainer);
+                }
+
+                // 질문 페이지로 이동할 때 고정 광고 표시 및 로드
+                const originalNavigateToPage = window.navigateToPage;
+                window.navigateToPage = function (pageNum) {
+                    originalNavigateToPage(pageNum);
+
+                    // 질문 페이지로 이동할 때 고정 광고 표시
+                    if (pageNum > 0 && fixedAdContainer) {
+                        fixedAdContainer.style.display = 'block';
+
+                        // 아직 로드되지 않았으면 강제로 로드
+                        if (fixedAdContainer.dataset.loaded !== 'true') {
+                            loadAd(fixedAdContainer, 'fixed');
+                        }
+                    } else if (fixedAdContainer) {
+                        fixedAdContainer.style.display = 'none';
+                    }
+                };
 
                 // 광고 로드 함수
                 function loadAd(container, index) {
@@ -1649,6 +1698,9 @@
                 function unloadAd(container, index) {
                     // 로드되지 않은 광고는 무시
                     if (container.dataset.loaded !== 'true') return;
+
+                    // 고정 광고는 언로드하지 않음
+                    if (index === 'fixed') return;
 
                     // 광고 컨텐츠 요소 찾기
                     const adContent = container.querySelector('.ad-content');
