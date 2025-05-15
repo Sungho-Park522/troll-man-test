@@ -1057,30 +1057,30 @@
                     document.getElementById('intro-page').style.display = 'block';
                     document.getElementById('progress-container').style.display = 'none';
                     document.getElementById('page-indicators').style.display = 'none';
+                    document.getElementById('fixed-ad-container').style.display = 'none'; // 인트로 페이지에서는 고정 광고 숨기기
                 } else {
                     document.getElementById(`question-page-${currentPage}`).classList.add('active');
                     document.getElementById('progress-container').style.display = 'block';
                     document.getElementById('page-indicators').style.display = 'flex';
+                    document.getElementById('fixed-ad-container').style.display = 'block'; // 질문 페이지에서는 고정 광고 표시
                     updateProgress();
                 }
 
                 // 페이지 인디케이터 업데이트
                 updatePageIndicators();
 
-                // 스크롤을 진행도 표시 부분으로 이동 (페이지 맨 위 대신)
+                // 스크롤을 진행도 표시 부분으로 이동
                 if (currentPage > 0) {
                     // 진행도 컨테이너 위치 가져오기
                     const progressContainer = document.getElementById('progress-container');
                     if (progressContainer) {
-                        // 상단에서 조금 위(진행도 표시 바로 위)로 스크롤 위치 설정
-                        const scrollPosition = progressContainer.offsetTop - 20; // 20px 위에 위치하도록 조정
+                        const scrollPosition = progressContainer.offsetTop - 20;
                         window.scrollTo({
                             top: scrollPosition,
-                            behavior: 'smooth' // 부드러운 스크롤 효과
+                            behavior: 'smooth'
                         });
                     }
                 } else {
-                    // 인트로 페이지로 돌아갈 때는 맨 위로 스크롤
                     window.scrollTo({
                         top: 0,
                         behavior: 'smooth'
