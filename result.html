@@ -1059,7 +1059,8 @@
         </div>
 
         <!-- 광고 추가 -->
-        <div class="ad-container fade-in delay-1" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
+        <div class="ad-container fade-in delay-1"
+            style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
@@ -1094,7 +1095,8 @@
         </div>
 
         <!-- 보고서 컨테이너 위에 광고 추가 -->
-        <div class="ad-container fade-in delay-2" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
+        <div class="ad-container fade-in delay-2"
+            style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
@@ -1134,7 +1136,8 @@
         </div>
 
         <!-- 광고 추가 -->
-        <div class="ad-container fade-in delay-3" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
+        <div class="ad-container fade-in delay-3"
+            style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
@@ -1210,7 +1213,8 @@
         </div>
 
         <!-- 추가 광고 -->
-        <div class="ad-container fade-in delay-6" style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
+        <div class="ad-container fade-in delay-6"
+            style="margin: 20px auto; width: 100%; max-width: 320px; text-align: center;">
             <div class="ad-header">
                 <span>추천</span>
             </div>
@@ -1561,8 +1565,8 @@
             }
         }
 
-        // 말풍선 내용 설정 함수 개선
-        function setRandomBubbles(topStats) {
+        // 말풍선 내용 설정 함수 개선 (보스 유형 기반 방식)
+        function setRandomBubbles(topStats, bossType, baseType) {
             const bubbles = [
                 document.getElementById('bubble-1'),
                 document.getElementById('bubble-2'),
@@ -1570,51 +1574,332 @@
                 document.getElementById('bubble-4')
             ];
 
-            // 개선된 말풍선 내용 (보다 현실적이고 공감되는 내용)
-            const bubbleContents = {
-                '꼰대력': [
-                    '요즘 애들은 기본이 안 돼 있어',
-                    '내가 너희 나이 때는...',
-                    '경험에서 우러나오는 조언이야',
-                    '이건 예의가 아니지'
+            // 보스 유형별 대표 발언 정의
+            const bossBubbleContents = {
+                // 기본 유형
+                '구시대의 꼰대 보스': [
+                    '요즘 애들은 왜 이렇게 근성이 없지',
+                    '우리 때는 이렇게 안 했어',
+                    '경험에서 우러나오는 조언이라고',
+                    '군대 다녀오면 저절로 배우는 것들인데',
+                    '요즘 젊은 친구들은 너무 편하게 자랐어',
+                    '나 때는 말이야...',
+                    '기본이 안 되어 있어'
                 ],
-                '내로남불': [
+                '황제형 내로남불 보스': [
                     '내 상황은 좀 특별해서...',
-                    '난 바빠서 어쩔 수 없었어',
-                    '직급이 다르니 상황도 달라',
-                    '너는 내 입장을 몰라'
+                    '직급이 다르니 상황도 다른 거지',
+                    '내가 늦는 건 어쩔 수 없는 일이 있어서야',
+                    '나는 바빠서 그랬는데 너는 무슨 핑계야?',
+                    '내가 왜 그랬는지 너는 이해 못할 거야',
+                    '내가 이 자리까지 올라온 이유가 있어',
+                    '규칙은 지켜야지'
                 ],
-                '갑질지수': [
+                '권위형 갑질 보스': [
                     '내가 누군지 알아?',
-                    '이건 네 업무 범위야',
-                    '왜 이렇게 시간이 걸려?',
-                    '그냥 시키는 대로 해'
+                    '그걸 왜 이제야 끝내?',
+                    '너 그러다 잘리고 싶니?',
+                    '내 말이 지시가 아니라 뭐야?',
+                    '그냥 시키는 대로나 해',
+                    '여기서 내가 제일 중요한 사람이야',
+                    '너랑 나랑 직급이 같냐?'
                 ],
-                '책임회피': [
-                    '이건 네가 담당한 부분이잖아',
-                    '난 그렇게 지시한 적 없어',
-                    '다른 팀에 물어봐',
-                    '윗선에서 그렇게 하래'
+                '책임회피형 보스': [
+                    '나는 그렇게 지시한 적 없어',
+                    '누가 이렇게 하라고 했어?',
+                    '그건 네가 담당한 부분이잖아',
+                    '내가 언제 그렇게 말했어?',
+                    '그건 윗선에서 그렇게 하래',
+                    '너도 동의했잖아',
+                    '기록에 그런 내용 없는데?'
                 ],
-                '워라밸파괴': [
-                    '주말에 잠깐만 와줄래?',
-                    '퇴근 전에 이것만 끝내자',
-                    '휴가 중에 메일 확인해?',
-                    '긴급한 건데 지금 봐줘'
+                '노예사냥꾼 보스': [
+                    '오늘 저녁에 잠깐 시간 돼?',
+                    '주말에 좀 나와줄래?',
+                    '퇴근 전에 이것만 끝내고 가자',
+                    '휴가 중이어도 메일 확인해?',
+                    '긴급한 거니까 지금 봐줘',
+                    '회사가 너한테 월급을 왜 주는 거라고 생각해?',
+                    '이 정도 시간은 투자해야지'
                 ],
-                '무능력': [
+                '무능력형 혼돈 보스': [
                     '이건 네가 더 잘 알잖아',
-                    '어떻게 하는 게 좋을까?',
-                    '그냥 이전처럼 해',
-                    '한 번 더 검토해볼게'
+                    '한 번 더 검토해보자',
+                    '그냥 예전처럼 해',
+                    '우리 팀에서는 항상 이렇게 해왔어',
+                    '다른 사람들은 어떻게 생각해?',
+                    '이것도 모르면 어떡해?',
+                    '시키는 대로만 하면 되는데 왜 이렇게 어려워해?'
                 ],
-                '합리성': [
-                    '객관적으로 생각해보자',
-                    '데이터를 확인해봤니?',
-                    '다양한 관점에서 보자',
-                    '합리적인 절차를 따르자'
+
+                // 복합 유형
+                '복합형 악몽 보스': [
+                    '지금 나한테 말대꾸하는 거야?',
+                    '왜 이 정도도 못해?',
+                    '너 이거 내일까지 다시 해와',
+                    '나도 야근하는데 뭐가 문제야?',
+                    '회사에 충성심이 없는 것 같아',
+                    '넌 기본이 안 되어 있어',
+                    '이거 못하면 누가 책임질 거야?'
+                ],
+                '권위주의형 복합 보스': [
+                    '너는 내 지시를 따르기만 하면 돼',
+                    '왜 자꾸 질문해? 그냥 시키는 대로 해',
+                    '나 때는 이렇게 안 했어',
+                    '넌 아직 경험이 부족해',
+                    '이 일은 내 방식대로 하자',
+                    '이건 위에서 하라는 대로 하는 거야',
+                    '너무 똑똑한 척하지 마'
+                ],
+                '노동착취형 복합 보스': [
+                    '야근 정도는 당연한 거 아니야?',
+                    '주말에 잠깐만 나와줘',
+                    '이거 진짜 급해서 오늘 안에 끝내야 해',
+                    '다들 이렇게 일해',
+                    '내가 너 때는 더 심했어',
+                    '열정이 부족한 것 같아',
+                    '이 정도 희생은 해야지'
+                ],
+                '무책임형 복합 보스': [
+                    '이건 네가 알아서 해',
+                    '내가 언제 그렇게 지시했어?',
+                    '그냥 네 판단대로 해',
+                    '난 그런 말 한 적 없어',
+                    '결정은 네가 했잖아',
+                    '자료는 네가 더 잘 알지 않아?',
+                    '그건 네 담당 아니었어?'
+                ],
+                '꼰대황제형 복합 보스': [
+                    '내가 경험이 더 많으니까',
+                    '우리 때는 이렇게 안 했어',
+                    '내가 너희 나이 때는 더 열심히 했다',
+                    '규칙은 지켜야지',
+                    '나한테는 예외야',
+                    '내가 이 자리까지 올라온 이유가 있어',
+                    '젊은 사람들은 이해 못할 거야'
+                ],
+                '이중 스트레스형 복합 보스': [
+                    '오늘은 이거, 내일은 저거 해',
+                    '왜 아직도 그 일을 못 끝냈어?',
+                    '퇴근 전까지 다 해놔',
+                    '너무 꼼꼼하게 할 필요 없어',
+                    '이건 더 자세하게 해와',
+                    '너무 오래 걸리는 것 같은데?',
+                    '왜 이렇게 단순한 것도 못 해?'
+                ],
+
+                // 기타 유형
+                '약한 스트레스형 보스': [
+                    '이거 좀 신경 써서 해줘',
+                    '마감일이 언제였지?',
+                    '이건 왜 이렇게 했어?',
+                    '나중에 다시 얘기하자',
+                    '다른 사람들은 어떻게 생각해?',
+                    '우리 팀 평판이 걱정돼',
+                    '이런 부분은 더 신경 써야 할 것 같아'
+                ],
+                '합리적 평범 보스': [
+                    '이 부분은 어떻게 생각해?',
+                    '오늘 퇴근 시간에 약속 있으면 먼저 가도 돼',
+                    '네 의견이 맞는 것 같아',
+                    '이 문제는 같이 해결해보자',
+                    '잘했어, 이런 점이 좋았어',
+                    '피드백을 좀 줄게',
+                    '질문 있으면 언제든지 물어봐'
+                ],
+                '무난한 일상형 보스': [
+                    '괜찮아, 다음에 조심하면 돼',
+                    '이 부분 좀 더 설명해줄래?',
+                    '오늘은 일찍 퇴근해도 좋아',
+                    '어떻게 생각해? 네 의견이 궁금해',
+                    '쉬어가면서 하자',
+                    '급한 일 아니니까 천천히 해',
+                    '네 아이디어가 좋네'
                 ]
             };
+
+            // 특수 유형 추가
+            bossBubbleContents['극한의 무능력한 꼰대 보스'] = [
+                '그냥 예전처럼 해',
+                '이것도 모르면 어떡해?',
+                '시키는 대로만 하면 되는데 왜 이렇게 어려워해?',
+                '우리 회사에서는 항상 이런 방식으로 해왔어',
+                '이렇게 하는 이유가 있을 거야',
+                '나 때는 더 심했어',
+                '기본도 모르면서 뭘 하려고 그래'
+            ];
+
+            // 어떤 말풍선 내용을 사용할지 결정
+            let bubbleMessages = [];
+
+            // 먼저 정확한 보스 타이틀 기반 발언 확인
+            if (bossBubbleContents[bossType]) {
+                bubbleMessages = bossBubbleContents[bossType];
+                console.log(`보스 타이틀 기반 발언 사용: ${bossType}`);
+            }
+            // 없으면 기본 유형 기반 발언 확인
+            else if (bossBubbleContents[baseType]) {
+                bubbleMessages = bossBubbleContents[baseType];
+                console.log(`기본 유형 기반 발언 사용: ${baseType}`);
+            }
+            // 둘 다 없으면 상위 스탯 기반 발언 사용 (기존 방식)
+            else {
+                console.log(`스탯 기반 발언 사용 (기본 유형 없음): ${bossType} / ${baseType}`);
+                // 기존 방식으로 발언 생성 (백업 방식)
+                const bubbleContents = {
+                    '꼰대력': [
+                        '요즘 애들은 기본이 안 돼 있어',
+                        '내가 너희 나이 때는...',
+                        '경험에서 우러나오는 조언이야',
+                        '이건 예의가 아니지'
+                    ],
+                    '내로남불': [
+                        '내 상황은 좀 특별해서...',
+                        '난 바빠서 어쩔 수 없었어',
+                        '직급이 다르니 상황도 달라',
+                        '너는 내 입장을 몰라'
+                    ],
+                    '갑질지수': [
+                        '내가 누군지 알아?',
+                        '이건 네 업무 범위야',
+                        '왜 이렇게 시간이 걸려?',
+                        '그냥 시키는 대로 해'
+                    ],
+                    '책임회피': [
+                        '이건 네가 담당한 부분이잖아',
+                        '난 그렇게 지시한 적 없어',
+                        '다른 팀에 물어봐',
+                        '윗선에서 그렇게 하래'
+                    ],
+                    '워라밸파괴': [
+                        '주말에 잠깐만 와줄래?',
+                        '퇴근 전에 이것만 끝내자',
+                        '휴가 중에 메일 확인해?',
+                        '긴급한 건데 지금 봐줘'
+                    ],
+                    '무능력': [
+                        '이건 네가 더 잘 알잖아',
+                        '어떻게 하는 게 좋을까?',
+                        '그냥 이전처럼 해',
+                        '한 번 더 검토해볼게'
+                    ],
+                    '합리성': [
+                        '객관적으로 생각해보자',
+                        '데이터를 확인해봤니?',
+                        '다양한 관점에서 보자',
+                        '합리적인 절차를 따르자'
+                    ]
+                };
+
+                // 상위 스탯 기반 발언 선택 (기존 로직)
+                for (let i = 0; i < Math.min(topStats.length, bubbles.length); i++) {
+                    if (!topStats[i] || !topStats[i][0] || !bubbles[i]) continue; // 배열 범위 체크
+
+                    const stat = topStats[i][0];
+                    const contents = bubbleContents[stat];
+
+                    if (!contents || contents.length === 0) {
+                        bubbles[i].textContent = "..."; // 기본 텍스트 설정
+                        continue;
+                    }
+
+                    // 시드 기반 선택 (오류 방지를 위해 예외 처리 추가)
+                    try {
+                        const specificSeed = (window.resultSeed || 12345) + (i * 500) + stat.charCodeAt(0);
+                        const index = Math.floor(Math.abs(Math.sin(specificSeed) * 10000) % contents.length);
+                        const randomContent = contents[index];
+
+                        bubbles[i].textContent = randomContent;
+
+                        // 스타일 적용 (statTypes가 정의되어 있는지 확인)
+                        if (statTypes && statTypes[stat] && statTypes[stat].color) {
+                            const baseColor = statTypes[stat].color;
+
+                            // 더 진한 배경색 사용 (40% → 20% 투명도)
+                            bubbles[i].style.backgroundColor = baseColor + '20';
+                            bubbles[i].style.borderColor = baseColor + '40';
+
+                            // 말풍선 꼬리 부분도 색상 적용
+                            const afterElement = document.createElement('style');
+                            afterElement.textContent = `
+                    #${bubbles[i].id}::after {
+                        background-color: ${baseColor}20 !important;
+                        border: 1px solid ${baseColor}40 !important;
+                    }
+                `;
+                            document.head.appendChild(afterElement);
+                        }
+                    } catch (error) {
+                        console.error(`말풍선 ${i} 설정 오류:`, error);
+                        bubbles[i].textContent = "..."; // 오류 시 기본 텍스트
+                    }
+                }
+
+                return; // 기존 방식으로 처리 완료, 여기서 함수 종료
+            }
+
+            // 보스 유형 기반 발언에서 랜덤하게 4개 선택 (중복 없이)
+            const selectedMessages = [];
+            if (bubbleMessages.length > 0) {
+                // 중복 없이 최대 4개 선택
+                const maxSelect = Math.min(4, bubbleMessages.length);
+                let attempts = 0;
+
+                // 중복 방지를 위한 시도 제한
+                const maxAttempts = 20;
+
+                while (selectedMessages.length < maxSelect && attempts < maxAttempts) {
+                    const specificSeed = (window.resultSeed || 12345) + (selectedMessages.length + attempts) * 1000;
+                    const index = Math.floor(Math.abs(Math.sin(specificSeed) * 10000) % bubbleMessages.length);
+
+                    if (!selectedMessages.includes(bubbleMessages[index])) {
+                        selectedMessages.push(bubbleMessages[index]);
+                    }
+                    attempts++;
+                }
+            }
+
+            // 선택된 발언들을 말풍선에 배치
+            selectedMessages.forEach((message, index) => {
+                if (bubbles[index]) {
+                    bubbles[index].textContent = message;
+
+                    // 말풍선 스타일 설정
+                    // 보스 유형에 따른 색상 설정
+                    let baseColor = '#3a54b4'; // 기본 색상
+
+                    // 보스 유형에 따른 색상 선택
+                    if (bossType.includes('꼰대') || baseType.includes('꼰대')) {
+                        baseColor = '#8e44ad'; // 꼰대력 색상
+                    } else if (bossType.includes('내로남불') || baseType.includes('내로남불')) {
+                        baseColor = '#e74c3c'; // 내로남불 색상
+                    } else if (bossType.includes('갑질') || baseType.includes('갑질')) {
+                        baseColor = '#c0392b'; // 갑질지수 색상
+                    } else if (bossType.includes('책임회피') || baseType.includes('책임회피')) {
+                        baseColor = '#f39c12'; // 책임회피 색상
+                    } else if (bossType.includes('워라밸') || baseType.includes('노예사냥꾼')) {
+                        baseColor = '#d35400'; // 워라밸파괴 색상
+                    } else if (bossType.includes('무능력') || baseType.includes('무능력')) {
+                        baseColor = '#7f8c8d'; // 무능력 색상
+                    } else if (bossType.includes('합리') || baseType.includes('합리')) {
+                        baseColor = '#2ecc71'; // 합리성 색상
+                    }
+
+                    // 배경색과 테두리 적용
+                    bubbles[index].style.backgroundColor = baseColor + '20';
+                    bubbles[index].style.borderColor = baseColor + '40';
+
+                    // 말풍선 꼬리 부분에도 색상 적용
+                    const afterElement = document.createElement('style');
+                    afterElement.textContent = `
+                #${bubbles[index].id}::after {
+                    background-color: ${baseColor}20 !important;
+                    border: 1px solid ${baseColor}40 !important;
+                }
+            `;
+                    document.head.appendChild(afterElement);
+                }
+            });
 
             // 말풍선 CSS 개선
             for (let i = 0; i < bubbles.length; i++) {
@@ -1652,51 +1937,144 @@
                     }
                 }
             }
-
-            // 상위 4개 능력치에 대한 말풍선 내용 설정
-            for (let i = 0; i < Math.min(topStats.length, bubbles.length); i++) {
-                if (!topStats[i] || !topStats[i][0] || !bubbles[i]) continue; // 배열 범위 체크
-
-                const stat = topStats[i][0];
-                const contents = bubbleContents[stat];
-
-                if (!contents || contents.length === 0) {
-                    bubbles[i].textContent = "..."; // 기본 텍스트 설정
-                    continue;
-                }
-
-                // 시드 기반 선택 (오류 방지를 위해 예외 처리 추가)
-                try {
-                    const specificSeed = (window.resultSeed || 12345) + (i * 500) + stat.charCodeAt(0);
-                    const index = Math.floor(Math.abs(Math.sin(specificSeed) * 10000) % contents.length);
-                    const randomContent = contents[index];
-
-                    bubbles[i].textContent = randomContent;
-
-                    // 스타일 적용 (statTypes가 정의되어 있는지 확인)
-                    if (statTypes && statTypes[stat] && statTypes[stat].color) {
-                        const baseColor = statTypes[stat].color;
-
-                        // 더 진한 배경색 사용 (40% → 20% 투명도)
-                        bubbles[i].style.backgroundColor = baseColor + '20';
-                        bubbles[i].style.borderColor = baseColor + '40';
-
-                        // 말풍선 꼬리 부분도 색상 적용
-                        const afterElement = document.createElement('style');
-                        afterElement.textContent = `
-                    #${bubbles[i].id}::after {
-                        background-color: ${baseColor}20 !important;
-                        border: 1px solid ${baseColor}40 !important;
-                    }
-                `;
-                        document.head.appendChild(afterElement);
-                    }
-                } catch (error) {
-                    console.error(`말풍선 ${i} 설정 오류:`, error);
-                    bubbles[i].textContent = "..."; // 오류 시 기본 텍스트
-                }
-            }
         }
+
+        // // 말풍선 내용 설정 함수 개선
+        // function setRandomBubbles(topStats) {
+        //     const bubbles = [
+        //         document.getElementById('bubble-1'),
+        //         document.getElementById('bubble-2'),
+        //         document.getElementById('bubble-3'),
+        //         document.getElementById('bubble-4')
+        //     ];
+
+        //     // 개선된 말풍선 내용 (보다 현실적이고 공감되는 내용)
+        //     const bubbleContents = {
+        //         '꼰대력': [
+        //             '요즘 애들은 기본이 안 돼 있어',
+        //             '내가 너희 나이 때는...',
+        //             '경험에서 우러나오는 조언이야',
+        //             '이건 예의가 아니지'
+        //         ],
+        //         '내로남불': [
+        //             '내 상황은 좀 특별해서...',
+        //             '난 바빠서 어쩔 수 없었어',
+        //             '직급이 다르니 상황도 달라',
+        //             '너는 내 입장을 몰라'
+        //         ],
+        //         '갑질지수': [
+        //             '내가 누군지 알아?',
+        //             '이건 네 업무 범위야',
+        //             '왜 이렇게 시간이 걸려?',
+        //             '그냥 시키는 대로 해'
+        //         ],
+        //         '책임회피': [
+        //             '이건 네가 담당한 부분이잖아',
+        //             '난 그렇게 지시한 적 없어',
+        //             '다른 팀에 물어봐',
+        //             '윗선에서 그렇게 하래'
+        //         ],
+        //         '워라밸파괴': [
+        //             '주말에 잠깐만 와줄래?',
+        //             '퇴근 전에 이것만 끝내자',
+        //             '휴가 중에 메일 확인해?',
+        //             '긴급한 건데 지금 봐줘'
+        //         ],
+        //         '무능력': [
+        //             '이건 네가 더 잘 알잖아',
+        //             '어떻게 하는 게 좋을까?',
+        //             '그냥 이전처럼 해',
+        //             '한 번 더 검토해볼게'
+        //         ],
+        //         '합리성': [
+        //             '객관적으로 생각해보자',
+        //             '데이터를 확인해봤니?',
+        //             '다양한 관점에서 보자',
+        //             '합리적인 절차를 따르자'
+        //         ]
+        //     };
+
+        //     // 말풍선 CSS 개선
+        //     for (let i = 0; i < bubbles.length; i++) {
+        //         if (bubbles[i]) {
+        //             // 말풍선 스타일 개선
+        //             bubbles[i].style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.15)';
+        //             bubbles[i].style.fontWeight = '500';
+        //             bubbles[i].style.fontSize = '13px';
+        //             bubbles[i].style.border = '1px solid rgba(0, 0, 0, 0.1)';
+
+        //             // 말풍선 위치 랜덤화 (약간의 변동 추가)
+        //             const variationX = Math.floor(seededRandom(window.resultSeed + i * 100) * 20) - 10;
+        //             const variationY = Math.floor(seededRandom(window.resultSeed + i * 200) * 20) - 10;
+
+        //             // 현재 위치에서 약간의 변동 추가
+        //             const currentStyle = window.getComputedStyle(bubbles[i]);
+        //             const currentTop = parseInt(currentStyle.top) || 0;
+        //             const currentLeft = parseInt(currentStyle.left) || 0;
+        //             const currentRight = parseInt(currentStyle.right) || 0;
+        //             const currentBottom = parseInt(currentStyle.bottom) || 0;
+
+        //             // 위치에 따라 다른 속성 조정
+        //             if (bubbles[i].classList.contains('bubble-top-left')) {
+        //                 bubbles[i].style.top = (currentTop + variationY) + 'px';
+        //                 bubbles[i].style.left = (currentLeft + variationX) + 'px';
+        //             } else if (bubbles[i].classList.contains('bubble-top-right')) {
+        //                 bubbles[i].style.top = (currentTop + variationY) + 'px';
+        //                 bubbles[i].style.right = (currentRight - variationX) + 'px';
+        //             } else if (bubbles[i].classList.contains('bubble-bottom-left')) {
+        //                 bubbles[i].style.bottom = (currentBottom - variationY) + 'px';
+        //                 bubbles[i].style.left = (currentLeft + variationX) + 'px';
+        //             } else if (bubbles[i].classList.contains('bubble-bottom-right')) {
+        //                 bubbles[i].style.bottom = (currentBottom - variationY) + 'px';
+        //                 bubbles[i].style.right = (currentRight - variationX) + 'px';
+        //             }
+        //         }
+        //     }
+
+        //     // 상위 4개 능력치에 대한 말풍선 내용 설정
+        //     for (let i = 0; i < Math.min(topStats.length, bubbles.length); i++) {
+        //         if (!topStats[i] || !topStats[i][0] || !bubbles[i]) continue; // 배열 범위 체크
+
+        //         const stat = topStats[i][0];
+        //         const contents = bubbleContents[stat];
+
+        //         if (!contents || contents.length === 0) {
+        //             bubbles[i].textContent = "..."; // 기본 텍스트 설정
+        //             continue;
+        //         }
+
+        //         // 시드 기반 선택 (오류 방지를 위해 예외 처리 추가)
+        //         try {
+        //             const specificSeed = (window.resultSeed || 12345) + (i * 500) + stat.charCodeAt(0);
+        //             const index = Math.floor(Math.abs(Math.sin(specificSeed) * 10000) % contents.length);
+        //             const randomContent = contents[index];
+
+        //             bubbles[i].textContent = randomContent;
+
+        //             // 스타일 적용 (statTypes가 정의되어 있는지 확인)
+        //             if (statTypes && statTypes[stat] && statTypes[stat].color) {
+        //                 const baseColor = statTypes[stat].color;
+
+        //                 // 더 진한 배경색 사용 (40% → 20% 투명도)
+        //                 bubbles[i].style.backgroundColor = baseColor + '20';
+        //                 bubbles[i].style.borderColor = baseColor + '40';
+
+        //                 // 말풍선 꼬리 부분도 색상 적용
+        //                 const afterElement = document.createElement('style');
+        //                 afterElement.textContent = `
+        //             #${bubbles[i].id}::after {
+        //                 background-color: ${baseColor}20 !important;
+        //                 border: 1px solid ${baseColor}40 !important;
+        //             }
+        //         `;
+        //                 document.head.appendChild(afterElement);
+        //             }
+        //         } catch (error) {
+        //             console.error(`말풍선 ${i} 설정 오류:`, error);
+        //             bubbles[i].textContent = "..."; // 오류 시 기본 텍스트
+        //         }
+        //     }
+        // }
 
         function setupResponsiveBubbles() {
             // 화면 너비에 따라 말풍선 표시 방식 변경
@@ -3781,14 +4159,23 @@
                 // 상사 이미지 설정 - 기존 유형 사용
                 setBossImage(bossAnalysis.title, bossAnalysis.baseType);
 
+
                 // 말풍선 내용 설정 (오류 처리 추가)
                 if (chartResult && chartResult.topStats && chartResult.topStats.length > 0) {
                     try {
-                        setRandomBubbles(chartResult.topStats);
+                        setRandomBubbles(chartResult.topStats, bossAnalysis.title, bossAnalysis.baseType);
                     } catch (error) {
                         console.error("말풍선 설정 오류:", error);
                     }
                 }
+                // // 말풍선 내용 설정 (오류 처리 추가)
+                // if (chartResult && chartResult.topStats && chartResult.topStats.length > 0) {
+                //     try {
+                //         setRandomBubbles(chartResult.topStats);
+                //     } catch (error) {
+                //         console.error("말풍선 설정 오류:", error);
+                //     }
+                // }
 
                 setupResponsiveBubbles();
 
