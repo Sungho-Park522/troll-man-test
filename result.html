@@ -3999,14 +3999,23 @@
 
                 // 공유 URL 생성 (시드 포함)
                 let shareUrl = window.location.href;
+
+                // 시드 파라미터 추가
                 if (!shareUrl.includes('seed=') && window.resultSeed) {
                     const separator = shareUrl.includes('?') ? '&' : '?';
                     shareUrl = `${shareUrl}${separator}seed=${window.resultSeed}`;
                 }
 
+                // shared 파라미터 추가 (공유 링크임을 표시)
+                if (!shareUrl.includes('shared=')) {
+                    const separator = shareUrl.includes('?') ? '&' : '?';
+                    shareUrl = `${shareUrl}${separator}shared=true`;
+                }
+
                 // 카카오톡 공유하기
                 try {
                     Kakao.Link.sendDefault({
+                        // 기존 코드와 동일하되, URL을 수정된 shareUrl로 변경
                         objectType: 'feed',
                         content: {
                             title: '미운 그놈 스탯 분석 결과 - 직장편',
@@ -4017,6 +4026,7 @@
                                 webUrl: shareUrl
                             }
                         },
+                        // 나머지 코드는 동일
                         buttons: [
                             {
                                 title: '결과 보기',
@@ -4045,13 +4055,22 @@
                 // 현재 URL에서 시드를 포함한 상태로 가져오기
                 const currentUrl = window.location.href;
 
-                // 시드가 없는 경우 추가
+                // 기본 공유 URL 준비
                 let shareUrl = currentUrl;
+
+                // 시드가 없는 경우 추가
                 if (!shareUrl.includes('seed=') && window.resultSeed) {
                     const separator = shareUrl.includes('?') ? '&' : '?';
                     shareUrl = `${shareUrl}${separator}seed=${window.resultSeed}`;
                 }
 
+                // shared 파라미터 추가 (공유 링크임을 표시)
+                if (!shareUrl.includes('shared=')) {
+                    const separator = shareUrl.includes('?') ? '&' : '?';
+                    shareUrl = `${shareUrl}${separator}shared=true`;
+                }
+
+                // 클립보드에 복사
                 navigator.clipboard.writeText(shareUrl)
                     .then(() => {
                         alert('결과 링크가 클립보드에 복사되었습니다!');
@@ -4256,160 +4275,24 @@
         document.addEventListener('DOMContentLoaded', function () {
             // URL에서 시드 확인
             const urlParams = new URLSearchParams(window.location.search);
+            const isShared = urlParams.get('shared') === 'true';
             const hasSeed = urlParams.has('seed');
 
             // 결과 컨테이너 숨기기
             const resultContainer = document.querySelector('.result-container');
-            if (resultContainer) {
-                resultContainer.style.display = 'none';
-            }
-
             // 로딩 화면 관련 요소
             const loadingContainer = document.getElementById('loading-container');
-            const progressBar = document.getElementById('loading-progress-bar');
-            const percentage = document.getElementById('loading-percentage');
-            const loadingMessage = document.getElementById('loading-message');
-            const showResultsBtn = document.getElementById('show-results-btn');
+            // if (resultContainer) {
+            //     resultContainer.style.display = 'none';
+            // }
 
-            // 이미지 로딩 상태 플래그
-            let imageLoaded = false;
-            let currentProgress = 0;
-            const maxProgressBeforeImageLoad = 89; // 이미지 로드 전 최대 진행률
+            if (isShared && hasSeed) {
+                console.log("공유 링크를 통해 접속: 로딩 화면 건너뛰기");
 
-            // 로딩 단계 설정
-            const loadingStages = [
-                { endProgress: 17, message: "제출된 설문지 분석중..." },
-                { endProgress: 40, message: "능력치 차트 생성중..." },
-                { endProgress: 58, message: "상사 이미지 생성중..." },
-                { endProgress: 71, message: "분석 보고서 생성중..." },
-                { endProgress: 89, message: "행동분석 생성중..." }
-            ];
-            let currentStage = 0;
-
-            // 총 로딩 시간 설정 (0~89%까지 10~15초)
-            const minLoadingTime = 10000; // 10초
-            const maxLoadingTime = 15000; // 15초
-            const totalLoadingTime = Math.floor(Math.random() * (maxLoadingTime - minLoadingTime + 1)) + minLoadingTime;
-
-            // 각 단계별 최소 시간 (1.5초)
-            const minStageTime = 1500; // 1.5초
-
-            // 각 단계별 시간 배분 (랜덤하게 하되 최소 시간 보장)
-            const stageTimes = [];
-            let remainingTime = totalLoadingTime;
-            let remainingStages = loadingStages.length;
-
-            // 각 단계별 시간 할당 (마지막 단계 제외)
-            for (let i = 0; i < loadingStages.length - 1; i++) {
-                // 남은 시간에서 최소 시간을 제외한 범위 내에서 랜덤 시간 할당
-                const maxPossibleTime = remainingTime - (minStageTime * (remainingStages - 1));
-                const stageTime = Math.max(
-                    minStageTime,
-                    Math.floor(Math.random() * (maxPossibleTime - minStageTime + 1)) + minStageTime
-                );
-
-                stageTimes.push(stageTime);
-                remainingTime -= stageTime;
-                remainingStages--;
-            }
-
-            // 마지막 단계에 남은 시간 할당
-            stageTimes.push(Math.max(minStageTime, remainingTime));
-
-            console.log("단계별 할당 시간(ms):", stageTimes);
-
-            // 각 단계의 진행률 증가량 계산
-            const stageIncrements = [];
-            for (let i = 0; i < loadingStages.length; i++) {
-                const startProgress = i === 0 ? 0 : loadingStages[i - 1].endProgress;
-                const endProgress = loadingStages[i].endProgress;
-                const progressRange = endProgress - startProgress;
-
-                // 진행률 증가량 = 단계의 진행률 범위 / (단계 시간 / 업데이트 간격)
-                const updateInterval = 30; // 30ms마다 업데이트
-                const increment = progressRange / (stageTimes[i] / updateInterval);
-
-                stageIncrements.push(increment);
-            }
-
-            // 보스 유형 분석 및 이미지 프리로드 시작
-            const stats = getStatsFromURL();
-            const bossAnalysis = analyzeBossType(stats);
-
-            // 이미지 프리로드 시작 (로딩창 표시 직후)
-            preloadBossImage(bossAnalysis.baseType, function (success) {
-                imageLoaded = true;
-                // 이미지 로드 완료 시 추가 조치는 메인 로딩 인터벌에서 처리됨
-            });
-
-            // 진행 상태 업데이트 간격
-            const updateInterval = 30; // 30ms마다 업데이트
-
-            // 초기 메시지 설정
-            loadingMessage.textContent = loadingStages[0].message;
-
-            // 진행 상태 및 메시지 업데이트 함수 수정
-            const loadingInterval = setInterval(function () {
-                // 현재 단계 결정
-                const startProgress = currentStage === 0 ? 0 : loadingStages[currentStage - 1].endProgress;
-                const endProgress = loadingStages[currentStage].endProgress;
-
-                // 89% 미만일 때 (이미지 로딩 완료 여부와 관계없이)
-                if (currentProgress < maxProgressBeforeImageLoad) {
-                    // 현재 단계의 진행률 증가
-                    currentProgress += stageIncrements[currentStage];
-
-                    // 현재 단계의 끝에 도달했는지 확인
-                    if (currentProgress >= endProgress && currentStage < loadingStages.length - 1) {
-                        currentStage++;
-                        loadingMessage.textContent = loadingStages[currentStage].message;
-                    }
-
-                    // 89%를 넘지 않도록 제한
-                    if (currentProgress > maxProgressBeforeImageLoad) {
-                        currentProgress = maxProgressBeforeImageLoad;
-                    }
-                }
-                // 89%에 도달했고 이미지가 로드되었을 때
-                else if (currentProgress >= maxProgressBeforeImageLoad && imageLoaded) {
-                    // 89%에 도달했을 때 "종합 보고서 생성중..." 메시지 표시
-                    if (Math.floor(currentProgress) === maxProgressBeforeImageLoad) {
-                        loadingMessage.textContent = "종합 보고서 생성중...";
-                    }
-
-                    // 89%에서 100%까지 2초 동안 진행
-                    currentProgress += (100 - maxProgressBeforeImageLoad) / (2000 / updateInterval);
-
-                    if (currentProgress > 100) {
-                        currentProgress = 100;
-                    }
-                }
-                // 이미지가 아직 로드되지 않았지만 89%에 도달한 경우
-                else if (currentProgress >= maxProgressBeforeImageLoad && !imageLoaded) {
-                    // 89%에서 대기하면서 "종합 보고서 생성중..." 메시지 유지
-                    loadingMessage.textContent = "종합 보고서 생성중...";
-                }
-
-                // 진행률이 100%에 도달하면 로딩 완료
-                if (currentProgress >= 100) {
-                    currentProgress = 100;
-                    clearInterval(loadingInterval);
-
-                    // 로딩 완료 후 결과 버튼 표시
-                    showResultsBtn.style.display = 'inline-block';
-                    showResultsBtn.classList.add('pulse');
-                    loadingMessage.textContent = "분석 완료! 결과를 확인해보세요.";
-                }
-
-                // 프로그레스 바 및 퍼센트 업데이트
-                progressBar.style.width = currentProgress + '%';
-                percentage.textContent = Math.round(currentProgress) + '%';
-            }, updateInterval);
-
-            // 결과 보기 버튼 클릭 이벤트
-            showResultsBtn.addEventListener('click', function () {
                 // 로딩 화면 숨기기
-                loadingContainer.style.display = 'none';
+                if (loadingContainer) {
+                    loadingContainer.style.display = 'none';
+                }
 
                 // 결과 컨테이너 표시
                 if (resultContainer) {
@@ -4420,7 +4303,168 @@
                         initializePage();
                     }
                 }
-            });
+            } else {
+
+                // 로딩 화면 관련 요소
+                const loadingContainer = document.getElementById('loading-container');
+                const progressBar = document.getElementById('loading-progress-bar');
+                const percentage = document.getElementById('loading-percentage');
+                const loadingMessage = document.getElementById('loading-message');
+                const showResultsBtn = document.getElementById('show-results-btn');
+
+
+
+                // 이미지 로딩 상태 플래그
+                let imageLoaded = false;
+                let currentProgress = 0;
+                const maxProgressBeforeImageLoad = 89; // 이미지 로드 전 최대 진행률
+
+                // 로딩 단계 설정
+                const loadingStages = [
+                    { endProgress: 17, message: "제출된 설문지 분석중..." },
+                    { endProgress: 40, message: "능력치 차트 생성중..." },
+                    { endProgress: 58, message: "상사 이미지 생성중..." },
+                    { endProgress: 71, message: "분석 보고서 생성중..." },
+                    { endProgress: 89, message: "행동분석 생성중..." }
+                ];
+                let currentStage = 0;
+
+                // 총 로딩 시간 설정 (0~89%까지 10~15초)
+                const minLoadingTime = 10000; // 10초
+                const maxLoadingTime = 15000; // 15초
+                const totalLoadingTime = Math.floor(Math.random() * (maxLoadingTime - minLoadingTime + 1)) + minLoadingTime;
+
+                // 각 단계별 최소 시간 (1.5초)
+                const minStageTime = 1500; // 1.5초
+
+                // 각 단계별 시간 배분 (랜덤하게 하되 최소 시간 보장)
+                const stageTimes = [];
+                let remainingTime = totalLoadingTime;
+                let remainingStages = loadingStages.length;
+
+                // 각 단계별 시간 할당 (마지막 단계 제외)
+                for (let i = 0; i < loadingStages.length - 1; i++) {
+                    // 남은 시간에서 최소 시간을 제외한 범위 내에서 랜덤 시간 할당
+                    const maxPossibleTime = remainingTime - (minStageTime * (remainingStages - 1));
+                    const stageTime = Math.max(
+                        minStageTime,
+                        Math.floor(Math.random() * (maxPossibleTime - minStageTime + 1)) + minStageTime
+                    );
+
+                    stageTimes.push(stageTime);
+                    remainingTime -= stageTime;
+                    remainingStages--;
+                }
+
+                // 마지막 단계에 남은 시간 할당
+                stageTimes.push(Math.max(minStageTime, remainingTime));
+
+                console.log("단계별 할당 시간(ms):", stageTimes);
+
+                // 각 단계의 진행률 증가량 계산
+                const stageIncrements = [];
+                for (let i = 0; i < loadingStages.length; i++) {
+                    const startProgress = i === 0 ? 0 : loadingStages[i - 1].endProgress;
+                    const endProgress = loadingStages[i].endProgress;
+                    const progressRange = endProgress - startProgress;
+
+                    // 진행률 증가량 = 단계의 진행률 범위 / (단계 시간 / 업데이트 간격)
+                    const updateInterval = 30; // 30ms마다 업데이트
+                    const increment = progressRange / (stageTimes[i] / updateInterval);
+
+                    stageIncrements.push(increment);
+                }
+
+                // 보스 유형 분석 및 이미지 프리로드 시작
+                const stats = getStatsFromURL();
+                const bossAnalysis = analyzeBossType(stats);
+
+                // 이미지 프리로드 시작 (로딩창 표시 직후)
+                preloadBossImage(bossAnalysis.baseType, function (success) {
+                    imageLoaded = true;
+                    // 이미지 로드 완료 시 추가 조치는 메인 로딩 인터벌에서 처리됨
+                });
+
+                // 진행 상태 업데이트 간격
+                const updateInterval = 30; // 30ms마다 업데이트
+
+                // 초기 메시지 설정
+                loadingMessage.textContent = loadingStages[0].message;
+
+                // 진행 상태 및 메시지 업데이트 함수 수정
+                const loadingInterval = setInterval(function () {
+                    // 현재 단계 결정
+                    const startProgress = currentStage === 0 ? 0 : loadingStages[currentStage - 1].endProgress;
+                    const endProgress = loadingStages[currentStage].endProgress;
+
+                    // 89% 미만일 때 (이미지 로딩 완료 여부와 관계없이)
+                    if (currentProgress < maxProgressBeforeImageLoad) {
+                        // 현재 단계의 진행률 증가
+                        currentProgress += stageIncrements[currentStage];
+
+                        // 현재 단계의 끝에 도달했는지 확인
+                        if (currentProgress >= endProgress && currentStage < loadingStages.length - 1) {
+                            currentStage++;
+                            loadingMessage.textContent = loadingStages[currentStage].message;
+                        }
+
+                        // 89%를 넘지 않도록 제한
+                        if (currentProgress > maxProgressBeforeImageLoad) {
+                            currentProgress = maxProgressBeforeImageLoad;
+                        }
+                    }
+                    // 89%에 도달했고 이미지가 로드되었을 때
+                    else if (currentProgress >= maxProgressBeforeImageLoad && imageLoaded) {
+                        // 89%에 도달했을 때 "종합 보고서 생성중..." 메시지 표시
+                        if (Math.floor(currentProgress) === maxProgressBeforeImageLoad) {
+                            loadingMessage.textContent = "종합 보고서 생성중...";
+                        }
+
+                        // 89%에서 100%까지 2초 동안 진행
+                        currentProgress += (100 - maxProgressBeforeImageLoad) / (2000 / updateInterval);
+
+                        if (currentProgress > 100) {
+                            currentProgress = 100;
+                        }
+                    }
+                    // 이미지가 아직 로드되지 않았지만 89%에 도달한 경우
+                    else if (currentProgress >= maxProgressBeforeImageLoad && !imageLoaded) {
+                        // 89%에서 대기하면서 "종합 보고서 생성중..." 메시지 유지
+                        loadingMessage.textContent = "종합 보고서 생성중...";
+                    }
+
+                    // 진행률이 100%에 도달하면 로딩 완료
+                    if (currentProgress >= 100) {
+                        currentProgress = 100;
+                        clearInterval(loadingInterval);
+
+                        // 로딩 완료 후 결과 버튼 표시
+                        showResultsBtn.style.display = 'inline-block';
+                        showResultsBtn.classList.add('pulse');
+                        loadingMessage.textContent = "분석 완료! 결과를 확인해보세요.";
+                    }
+
+                    // 프로그레스 바 및 퍼센트 업데이트
+                    progressBar.style.width = currentProgress + '%';
+                    percentage.textContent = Math.round(currentProgress) + '%';
+                }, updateInterval);
+
+                // 결과 보기 버튼 클릭 이벤트
+                showResultsBtn.addEventListener('click', function () {
+                    // 로딩 화면 숨기기
+                    loadingContainer.style.display = 'none';
+
+                    // 결과 컨테이너 표시
+                    if (resultContainer) {
+                        resultContainer.style.display = 'block';
+
+                        // 차트 다시 그리기 (필요한 경우)
+                        if (typeof initializePage === 'function') {
+                            initializePage();
+                        }
+                    }
+                });
+            }
         });
 
         // 페이지 완전 로드 시에도 초기화 시도 (DOMContentLoaded가 실패한 경우 백업)
